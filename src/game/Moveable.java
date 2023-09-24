@@ -2,6 +2,7 @@ package game;
 
 public interface Moveable
 {
-    public void doLogic(long delta);
-    public void move(long delta);
+    public void doLogic(final float delta);
+
+    public void move(final float delta);
 }
