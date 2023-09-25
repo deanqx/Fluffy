@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ListIterator;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -15,7 +14,6 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable
 {
-    private static final long serialVersionUID = 1L;
     JFrame frame;
 
     float fps = 0.0f;
@@ -107,6 +105,7 @@ public class GamePanel extends JPanel implements Runnable
         long last = System.nanoTime();
         while (frame.isVisible())
         {
+            // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
             final float delta = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
             fps = 1e-3f / delta;

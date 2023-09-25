@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 {
+    // Time between images (ms)
     long delay;
     long animation = 0;
     GamePanel panel;
