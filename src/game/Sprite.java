@@ -7,8 +7,8 @@ import java.awt.image.BufferedImage;
 public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 {
     // Time between images (ms)
-    long delay;
-    long animation = 0;
+    float delay;
+    float animation = 0.0f;
     GamePanel panel;
     BufferedImage[] pics;
     int current_pic = 0;
@@ -16,7 +16,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     protected float x_velocity;
     protected float y_velocity;
 
-    public Sprite(BufferedImage[] imgs, float x, float y, long delay, GamePanel p)
+    public Sprite(BufferedImage[] imgs, float x, float y, float delay, GamePanel p)
     {
         pics = imgs;
         this.x = x;
@@ -48,7 +48,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 
         if (animation > delay)
         {
-            animation = 0;
+            animation = 0.0f;
             computeAnimation();
         }
     }

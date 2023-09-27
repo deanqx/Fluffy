@@ -7,24 +7,26 @@
     <property name="jar.name" value="Fluffy.jar"/>
     <property name="main.class" value="game.Main"/>
 
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-        <delete dir="${jar.dir}"/>
-    </target>
-
     <target name="init">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${jar.dir}"/>
     </target>
 
-    <target name="compile" depends="init">
+    <target name="build" depends="init">
         <javac srcdir="${src.dir}" destdir="${build.dir}">
             <classpath>
             </classpath>
         </javac>
     </target>
 
-    <target name="dist" depends="compile">
+    <target name="rebuild">
+        <delete dir="${build.dir}"/>
+        <delete dir="${jar.dir}"/>
+
+        <antcall target="build"/>
+    </target>
+
+    <target name="dist" depends="build">
         <jar destfile="${jar.dir}/${jar.name}" basedir="${build.dir}">
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>

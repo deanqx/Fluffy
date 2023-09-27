@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -42,13 +41,14 @@ public class GamePanel extends JPanel implements Runnable
 
     private void init()
     {
-        heli = new Sprite(loadPics("res/heli.gif", 4), 400, 300, 100, this);
+        heli = new Sprite(loadPics("res/heli.gif", 4), 400, 300, 100.0f, this);
         actors.add(heli);
     }
 
-    private BufferedImage[] loadPics(String path, int pics)
+    // Bilder müssen horizontal hintereinander in einem Bild sein
+    private BufferedImage[] loadPics(String path, int picCount)
     {
-        BufferedImage[] anim = new BufferedImage[pics];
+        BufferedImage[] pics = new BufferedImage[picCount];
         BufferedImage source = null;
 
         File pic = new File(path);
@@ -59,12 +59,13 @@ public class GamePanel extends JPanel implements Runnable
         } catch (IOException e)
         {}
 
-        for (int x = 0; x < pics; x++)
+        for (int x = 0; x < picCount; x++)
         {
-            anim[x] = source.getSubimage(x * source.getWidth() / pics, 0, source.getWidth() / pics, source.getHeight());
+            // Bild mit picCount aufteilen
+            pics[x] = source.getSubimage(x * source.getWidth() / picCount, 0, source.getWidth() / picCount, source.getHeight());
         }
 
-        return anim;
+        return pics;
     }
 
     private void moveObjects()
@@ -109,7 +110,7 @@ public class GamePanel extends JPanel implements Runnable
             // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
             final float delta = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
-            fps = 1e-3f / delta;
+            fps = 1e3f / delta;
 
             checkKeys(delta);
             doLogic(delta);

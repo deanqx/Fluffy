@@ -2,7 +2,9 @@ package game;
 
 public class Main
 {
-    // unterschied zwischen initialisieren und deklarieren
+    // Hausaufgaben:
+    int x0 = 1; // Dies nennt man initialisierung
+    int x1; // Dies nennt man deklaration
 
     public static void main(String[] args)
     {
