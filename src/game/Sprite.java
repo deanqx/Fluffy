@@ -31,7 +31,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     {
         current_pic++;
 
-        if (current_pic > pics.length)
+        if (current_pic >= pics.length)
         {
             current_pic = 0;
         }
