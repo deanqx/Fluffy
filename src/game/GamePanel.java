@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Vector;
@@ -50,11 +51,11 @@ public class GamePanel extends JPanel implements Runnable
         BufferedImage[] anim = new BufferedImage[pics];
         BufferedImage source = null;
 
-        URL pic_url = getClass().getClassLoader().getResource(path);
+        File pic = new File(path);
 
         try
         {
-            source = ImageIO.read(pic_url);
+            source = ImageIO.read(pic);
         } catch (IOException e)
         {}
 
