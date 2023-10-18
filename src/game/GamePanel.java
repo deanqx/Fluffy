@@ -17,6 +17,7 @@ public class GamePanel extends JPanel implements Runnable
     JFrame frame;
 
     float fps = 0.0f;
+    float deltaTime;
 
     Sprite heli;
     Vector<Sprite> actors;
@@ -41,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable
 
     private void init()
     {
-        heli = new Sprite(loadPics("res/heli.gif", 4), 400, 300, 100.0f, this);
+        heli = new Sprite(loadPics("res/fluffy.png", 3), 48, 32, 150.0f, this);
         actors.add(heli);
     }
 
@@ -71,19 +72,19 @@ public class GamePanel extends JPanel implements Runnable
     private void moveObjects()
     {}
 
-    private void doLogic(final float delta)
+    private void doLogic()
     {
         for (Sprite it : actors)
         {
-            it.doLogic(delta);
+            it.doLogic();
         }
     }
 
-    private void checkKeys(final float delta)
+    private void checkKeys()
     {
         for (Sprite it : actors)
         {
-            it.move(delta);
+            it.move();
         }
     }
 
@@ -108,19 +109,19 @@ public class GamePanel extends JPanel implements Runnable
         while (frame.isVisible())
         {
             // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
-            final float delta = (float) (System.nanoTime() - last) * 1e-6f;
+            deltaTime = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
-            fps = 1e3f / delta;
+            fps = 1e3f / deltaTime;
 
-            checkKeys(delta);
-            doLogic(delta);
+            checkKeys();
+            doLogic();
             moveObjects();
 
             repaint();
 
             try
             {
-                Thread.sleep(12);
+                Thread.sleep(8);
             } catch (InterruptedException e)
             {
                 System.out.println("Thread got interrupted");

@@ -42,9 +42,9 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
         g.drawImage(pics[current_pic], (int) x, (int) y, null);
     }
 
-    public void doLogic(final float delta)
+    public void doLogic()
     {
-        animation += delta;
+        animation += panel.deltaTime;
 
         if (animation > delay)
         {
@@ -53,16 +53,16 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
         }
     }
 
-    public void move(final float delta)
+    public void move()
     {
         if (x_velocity != 0)
         {
-            x += x_velocity * delta;
+            x += x_velocity * panel.deltaTime;
         }
 
         if (y_velocity != 0)
         {
-            y += y_velocity * delta;
+            y += y_velocity * panel.deltaTime;
         }
     }
 }
