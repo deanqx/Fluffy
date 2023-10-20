@@ -42,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable
 
     private void init()
     {
-        heli = new Sprite(loadPics("res/fluffy.png", 3), 48, 32, 150.0f, this);
+        heli = new Sprite(loadPics("res/fluffy.png", 4), 372, 400, 500, this);
         actors.add(heli);
     }
 
@@ -94,7 +94,7 @@ public class GamePanel extends JPanel implements Runnable
         super.paintComponent(g);
 
         g.setColor(Color.red);
-        g.drawString(String.format("%.1f", fps) + " fps - Dean", 10, 20);
+        g.drawString(String.format("%.1f", fps) + " fps", 10, 20);
 
         for (Sprite it : actors)
         {

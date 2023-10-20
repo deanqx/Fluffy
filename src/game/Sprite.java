@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 {
-    // Time between images (ms)
+    // Time between images
     float delay;
     float animation = 0.0f;
     GamePanel panel;
@@ -16,12 +16,14 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     protected float x_velocity;
     protected float y_velocity;
 
-    public Sprite(BufferedImage[] imgs, float x, float y, float delay, GamePanel p)
+    private final int SCALE = 2;
+
+    public Sprite(BufferedImage[] imgs, float x, float y, int delay, GamePanel p)
     {
         pics = imgs;
         this.x = x;
         this.y = y;
-        this.delay = delay;
+        this.delay = (float) delay;
         this.width = pics[0].getWidth();
         this.width = pics[0].getHeight();
         panel = p;
@@ -39,7 +41,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 
     public void drawObjects(Graphics g)
     {
-        g.drawImage(pics[current_pic], (int) x, (int) y, null);
+        g.drawImage(pics[current_pic], (int) x, (int) y, pics[current_pic].getWidth() * SCALE, pics[current_pic].getHeight() * SCALE, null);
     }
 
     public void doLogic()
