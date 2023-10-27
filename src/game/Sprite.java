@@ -57,14 +57,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 
     public void move()
     {
-        if (x_velocity != 0)
-        {
-            x += x_velocity * panel.deltaTime;
-        }
-
-        if (y_velocity != 0)
-        {
-            y += y_velocity * panel.deltaTime;
-        }
+        x += x_velocity * panel.deltaTime;
+        y += y_velocity * panel.deltaTime;
     }
 }
