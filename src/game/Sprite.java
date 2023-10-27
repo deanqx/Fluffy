@@ -6,27 +6,33 @@ import java.awt.image.BufferedImage;
 
 public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 {
-    // Time between images
-    float delay;
-    float animation = 0.0f;
-    GamePanel panel;
-    BufferedImage[] pics;
-    int current_pic = 0;
-
     protected float x_velocity;
     protected float y_velocity;
+    private float width_scaled;
+    private float height_scaled;
 
-    private final int SCALE = 2;
+    private GamePanel panel;
+    // Time between images
+    private float delay;
+    private float animation = 0.0f;
+    private BufferedImage[] pics;
+    private int current_pic = 0;
+    private Bounds bounds;
 
-    public Sprite(BufferedImage[] imgs, float x, float y, int delay, GamePanel p)
+    private final float SCALE = 2;
+
+    public Sprite(BufferedImage[] imgs, float x, float y, int delay, GamePanel p, Bounds b)
     {
         pics = imgs;
         this.x = x;
         this.y = y;
         this.delay = (float) delay;
-        this.width = pics[0].getWidth();
-        this.width = pics[0].getHeight();
+        width = pics[0].getWidth();
+        height = pics[0].getHeight();
+        width_scaled = (float) width * (float) SCALE;
+        height_scaled = (float) height * (float) SCALE;
         panel = p;
+        bounds = b;
     }
 
     private void computeAnimation()
@@ -41,10 +47,40 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 
     public void drawObjects(Graphics g)
     {
-        g.drawImage(pics[current_pic], (int) x, (int) y, pics[current_pic].getWidth() * SCALE, pics[current_pic].getHeight() * SCALE, null);
+        g.drawImage(pics[current_pic], (int) x, (int) y, (int) width_scaled, (int) height_scaled, null);
     }
 
-    public void doLogic()
+    public void checkBounds()
+    {
+        if (x < bounds.left)
+        {
+            x = bounds.left;
+            bounds.hit = true;
+        }
+
+        if (y < bounds.top)
+        {
+            y = bounds.top;
+            bounds.hit = true;
+        }
+
+        if (x + width_scaled > bounds.right)
+        {
+            x = bounds.right - width_scaled;
+            bounds.hit = true;
+        }
+
+        if (y + height_scaled > bounds.bottom)
+        {
+            y = bounds.bottom - height_scaled;
+            bounds.hit = true;
+        }
+
+        if (x > bounds.left && y > bounds.top && x + width_scaled < bounds.right && y + height_scaled < bounds.bottom)
+            bounds.hit = false;
+    }
+
+    public void afterLogic()
     {
         animation += panel.deltaTime;
 
@@ -53,6 +89,8 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
             animation = 0.0f;
             computeAnimation();
         }
+
+        checkBounds();
     }
 
     public void move()

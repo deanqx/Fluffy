@@ -33,6 +33,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     public GamePanel(int w, int h)
     {
         this.setPreferredSize(new Dimension(w, h));
+        this.setBackground(new Color(89, 108, 171, 255));
         frame = new JFrame("GameDemo");
         frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,7 +52,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void init()
     {
-        cloud = new Sprite(loadPics("res/fluffy.png", 4), 372, 400, 500, this);
+        cloud = new Sprite(loadPics("res/fluffy.png", 4), 372, 400, 500, this, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width));
         actors.add(cloud);
     }
 
@@ -86,11 +87,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         }
     }
 
-    private void doLogic()
+    private void afterLogic()
     {
         for (Sprite it : actors)
         {
-            it.doLogic();
+            it.afterLogic();
         }
     }
 
@@ -138,8 +139,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             fps = 1e3f / deltaTime;
 
             checkKeys();
-            doLogic();
             moveObjects();
+            afterLogic();
 
             repaint();
 
