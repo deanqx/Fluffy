@@ -48,7 +48,6 @@ public class FogGen
     {
         ThreadLocalRandom t = ThreadLocalRandom.current();
 
-        int i = 0;
         for (Sprite fog : actors)
         {
             if (fog.tag == Sprite.Tag.Fog && fog.bounds.hit)
@@ -70,7 +69,6 @@ public class FogGen
 
                 fog.x_velocity = fog.speed * x_vel_variance;
                 fog.y_velocity = fog.speed * y_vel_variance;
-                i++;
             }
         }
     }
