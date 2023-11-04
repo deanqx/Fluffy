@@ -15,4 +15,11 @@ public class Bounds
         this.left = left;
         this.right = right;
     }
+
+    public Bounds clone()
+    {
+        Bounds clone = new Bounds(top, bottom, left, right);
+        clone.hit = hit;
+        return clone;
+    }
 }

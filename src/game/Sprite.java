@@ -6,10 +6,19 @@ import java.awt.image.BufferedImage;
 
 public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 {
+    enum Tag
+    {
+        Cloud, Fog
+    }
+
+    protected final Tag tag;
+    protected final float scale;
+    protected final float speed;
     protected float x_velocity;
     protected float y_velocity;
-    private float width_scaled;
-    private float height_scaled;
+    protected final float width_scaled;
+    protected final float height_scaled;
+    protected Bounds bounds;
 
     private GamePanel panel;
     // Time between images
@@ -17,25 +26,25 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     private float animation = 0.0f;
     private BufferedImage[] pics;
     private int current_pic = 0;
-    private Bounds bounds;
 
-    private final float SCALE = 2;
-
-    public Sprite(BufferedImage[] imgs, float x, float y, int delay, GamePanel p, Bounds b)
+    public Sprite(GamePanel p, Tag tag, BufferedImage[] imgs, float x, float y, float scale, Bounds b, int delay, float speed)
     {
+        this.tag = tag;
+        this.speed = speed;
         pics = imgs;
         this.x = x;
         this.y = y;
+        this.scale = scale;
         this.delay = (float) delay;
         width = pics[0].getWidth();
         height = pics[0].getHeight();
-        width_scaled = (float) width * (float) SCALE;
-        height_scaled = (float) height * (float) SCALE;
+        width_scaled = (float) width * scale;
+        height_scaled = (float) height * scale;
         panel = p;
-        bounds = b;
+        bounds = b.clone();
     }
 
-    private void computeAnimation()
+    private void compute_animation()
     {
         current_pic++;
 
@@ -45,13 +54,19 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
         }
     }
 
-    public void drawObjects(Graphics g)
+    public void draw_objects(Graphics g)
     {
         g.drawImage(pics[current_pic], (int) x, (int) y, (int) width_scaled, (int) height_scaled, null);
     }
 
-    public void checkBounds()
+    public void check_bounds()
     {
+        if (bounds.hit && x > bounds.left && y > bounds.top && x + width_scaled < bounds.right && y + height_scaled < bounds.bottom)
+        {
+            bounds.hit = false;
+            return;
+        }
+
         if (x < bounds.left)
         {
             x = bounds.left;
@@ -75,22 +90,22 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
             y = bounds.bottom - height_scaled;
             bounds.hit = true;
         }
-
-        if (x > bounds.left && y > bounds.top && x + width_scaled < bounds.right && y + height_scaled < bounds.bottom)
-            bounds.hit = false;
     }
 
-    public void afterLogic()
+    public void after_move()
     {
-        animation += panel.deltaTime;
-
-        if (animation > delay)
+        if (pics.length > 1)
         {
-            animation = 0.0f;
-            computeAnimation();
+            animation += panel.deltaTime;
+
+            if (animation > delay)
+            {
+                animation = 0.0f;
+                compute_animation();
+            }
         }
 
-        checkBounds();
+        check_bounds();
     }
 
     public void move()

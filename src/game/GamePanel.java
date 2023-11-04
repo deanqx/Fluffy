@@ -22,13 +22,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     float deltaTime;
 
     Sprite cloud;
+    FogGen fog_gen;
     Vector<Sprite> actors;
 
-    boolean up;
-    boolean left;
-    boolean down;
-    boolean right;
-    float speed = 1.0f;
+    boolean key_up;
+    boolean key_left;
+    boolean key_down;
+    boolean key_right;
 
     public GamePanel(int w, int h)
     {
@@ -52,12 +52,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void init()
     {
-        cloud = new Sprite(loadPics("res/fluffy.png", 4), 372, 400, 500, this, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width));
+        cloud = new Sprite(this, Sprite.Tag.Cloud, load_pics("res/fluffy.png", 4), 372, 400, 2.0f, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width), 500, 0.3f);
         actors.add(cloud);
+
+        BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
+        fog_gen = new FogGen(this, actors, fog_prefab, 0.5f, 1.2f);
+        fog_gen.spawn_fog(10, 0.03f);
     }
 
     // Bilder müssen horizontal hintereinander in einem Bild sein
-    private BufferedImage[] loadPics(String path, int picCount)
+    private BufferedImage[] load_pics(String path, int picCount)
     {
         BufferedImage[] pics = new BufferedImage[picCount];
         BufferedImage source = null;
@@ -79,7 +83,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         return pics;
     }
 
-    private void moveObjects()
+    private void move_objects()
     {
         for (Sprite it : actors)
         {
@@ -87,29 +91,31 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         }
     }
 
-    private void afterLogic()
+    private void after_move()
     {
+        fog_gen.redirect_fog();
+
         for (Sprite it : actors)
         {
-            it.afterLogic();
+            it.after_move();
         }
     }
 
-    private void checkKeys()
+    private void check_keys()
     {
-        if (up)
-            cloud.y_velocity = -speed;
-        else if (down)
-            cloud.y_velocity = speed;
+        if (key_up)
+            cloud.y_velocity = -cloud.speed;
+        else if (key_down)
+            cloud.y_velocity = cloud.speed;
 
-        if (left)
-            cloud.x_velocity = -speed;
-        else if (right)
-            cloud.x_velocity = speed;
+        if (key_left)
+            cloud.x_velocity = -cloud.speed;
+        else if (key_right)
+            cloud.x_velocity = cloud.speed;
 
-        if (up == down)
+        if (key_up == key_down)
             cloud.y_velocity = 0.0f;
-        if (left == right)
+        if (key_left == key_right)
             cloud.x_velocity = 0.0f;
     }
 
@@ -118,13 +124,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         super.paintComponent(g);
 
-        g.setColor(Color.red);
-        g.drawString(String.format("%.1f", fps) + " fps", 10, 20);
-
         for (Sprite it : actors)
         {
-            it.drawObjects(g);
+            it.draw_objects(g);
         }
+
+        g.setColor(Color.red);
+        g.drawString(String.format("%.1f", fps) + " fps", 10, 20);
     }
 
     @Override
@@ -138,9 +144,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             last = System.nanoTime();
             fps = 1e3f / deltaTime;
 
-            checkKeys();
-            moveObjects();
-            afterLogic();
+            check_keys();
+            move_objects();
+            after_move();
 
             repaint();
 
@@ -154,44 +160,35 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         }
     }
 
-    @Override
-    public void keyPressed(KeyEvent e)
+    void update_keys(KeyEvent e, boolean pressed)
     {
         switch (e.getKeyCode())
         {
         case KeyEvent.VK_W:
-            up = true;
+            key_up = pressed;
             break;
         case KeyEvent.VK_A:
-            left = true;
+            key_left = pressed;
             break;
         case KeyEvent.VK_S:
-            down = true;
+            key_down = pressed;
             break;
         case KeyEvent.VK_D:
-            right = true;
+            key_right = pressed;
             break;
         }
     }
 
     @Override
+    public void keyPressed(KeyEvent e)
+    {
+        update_keys(e, true);
+    }
+
+    @Override
     public void keyReleased(KeyEvent e)
     {
-        switch (e.getKeyCode())
-        {
-        case KeyEvent.VK_W:
-            up = false;
-            break;
-        case KeyEvent.VK_A:
-            left = false;
-            break;
-        case KeyEvent.VK_S:
-            down = false;
-            break;
-        case KeyEvent.VK_D:
-            right = false;
-            break;
-        }
+        update_keys(e, false);
     }
 
     @Override

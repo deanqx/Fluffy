@@ -4,5 +4,5 @@ import java.awt.Graphics;
 
 public interface Drawable
 {
-    public void drawObjects(Graphics g);
+    public void draw_objects(Graphics g);
 }
