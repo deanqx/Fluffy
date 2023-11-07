@@ -24,7 +24,7 @@ public class FogGen
         this.max_scale = max_scale;
     }
 
-    public void spawn_fog(int n, float speed)
+    public void spawn(int n, float speed)
     {
         ThreadLocalRandom t = ThreadLocalRandom.current();
 
@@ -44,32 +44,34 @@ public class FogGen
         }
     }
 
-    public void redirect_fog()
+    public void redirect()
     {
         ThreadLocalRandom t = ThreadLocalRandom.current();
 
         for (Sprite fog : actors)
         {
-            if (fog.tag == Sprite.Tag.Fog && fog.bounds.hit)
+            if (fog.tag != Sprite.Tag.Fog || !fog.bounds.hit)
             {
-                boolean top_or_left = t.nextInt(0, 2) == 1;
-
-                if (top_or_left)
-                {
-                    fog.x = (double) t.nextFloat(bounds.left, bounds.right - fog.width_scaled);
-                    fog.y = bounds.top + 1.0f;
-                } else
-                {
-                    fog.x = bounds.left + 1.0f;
-                    fog.y = (double) t.nextFloat(bounds.top, bounds.bottom - fog.height_scaled);
-                }
-
-                float x_vel_variance = t.nextFloat(0.8f, 1.0f);
-                float y_vel_variance = t.nextFloat(0.8f, 1.0f);
-
-                fog.x_velocity = fog.speed * x_vel_variance;
-                fog.y_velocity = fog.speed * y_vel_variance;
+                continue;
             }
+
+            boolean top_or_left = t.nextInt(0, 2) == 1;
+
+            if (top_or_left)
+            {
+                fog.x = (double) t.nextFloat(bounds.left, bounds.right - fog.width_scaled);
+                fog.y = bounds.top + 1.0f;
+            } else
+            {
+                fog.x = bounds.left + 1.0f;
+                fog.y = (double) t.nextFloat(bounds.top, bounds.bottom - fog.height_scaled);
+            }
+
+            float x_vel_variance = t.nextFloat(0.8f, 1.0f);
+            float y_vel_variance = t.nextFloat(0.8f, 1.0f);
+
+            fog.x_velocity = fog.speed * x_vel_variance;
+            fog.y_velocity = fog.speed * y_vel_variance;
         }
     }
 }

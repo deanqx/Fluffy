@@ -20,6 +20,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     float fps = 0.0f;
     float deltaTime;
+    float fixed_update_counter;
+    final float fixed_update_interval = 1000.0f;
 
     Sprite cloud;
     FogGen fog_gen;
@@ -57,7 +59,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
         fog_gen = new FogGen(this, actors, fog_prefab, 0.5f, 1.2f);
-        fog_gen.spawn_fog(10, 0.03f);
+        fog_gen.spawn(10, 0.03f);
     }
 
     // Bilder müssen horizontal hintereinander in einem Bild sein
@@ -93,7 +95,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void after_move()
     {
-        fog_gen.redirect_fog();
+        fog_gen.redirect();
 
         for (Sprite it : actors)
         {
@@ -133,6 +135,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         g.drawString(String.format("%.1f", fps) + " fps", 10, 20);
     }
 
+    public void fixed_update()
+    {
+        for (int i = actors.size() - 1; i >= 0; i--)
+        {
+            if (actors.get(i).to_remove)
+            {
+                actors.remove(i);
+            }
+        }
+    }
+
     @Override
     public void run()
     {
@@ -142,11 +155,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
             deltaTime = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
+            fixed_update_counter += deltaTime;
             fps = 1e3f / deltaTime;
 
             check_keys();
             move_objects();
             after_move();
+
+            if (fixed_update_counter >= fixed_update_interval)
+            {
+                fixed_update_counter = 0.0f;
+                fixed_update();
+            }
 
             repaint();
 

@@ -8,7 +8,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 {
     enum Tag
     {
-        Cloud, Fog
+        Cloud, Fog, Enemy
     }
 
     protected final Tag tag;
@@ -19,6 +19,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     protected final float width_scaled;
     protected final float height_scaled;
     protected Bounds bounds;
+    protected boolean to_remove = false;
 
     private GamePanel panel;
     // Time between images
