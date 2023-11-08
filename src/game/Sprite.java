@@ -4,6 +4,9 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import structs.Bounds;
+import structs.Pos;
+
 public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 {
     enum Tag
@@ -14,11 +17,14 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     protected final Tag tag;
     protected final float scale;
     protected float speed;
+    protected float x_mid_offset;
+    protected float y_mid_offset;
     protected float x_velocity;
     protected float y_velocity;
     protected final float width_scaled;
     protected final float height_scaled;
     protected Bounds bounds;
+    protected float radius;
     protected boolean to_remove = false;
 
     private GamePanel panel;
@@ -41,8 +47,19 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
         height = pics[0].getHeight();
         width_scaled = (float) width * scale;
         height_scaled = (float) height * scale;
+        x_mid_offset = width_scaled / 2.0f;
+        y_mid_offset = height_scaled / 2.0f;
+        radius = Math.max(width_scaled, height_scaled) / 2.0f;
         panel = p;
         bounds = b.clone();
+    }
+
+    public float distance(Sprite to)
+    {
+        float a = ((float) to.x + to.x_mid_offset) - ((float) x + x_mid_offset);
+        float b = ((float) to.y + to.y_mid_offset) - ((float) y + y_mid_offset);
+
+        return (float) Math.sqrt(a * a + b * b) - radius - to.radius;
     }
 
     private void compute_animation()
@@ -58,6 +75,11 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     public void draw_objects(Graphics g)
     {
         g.drawImage(pics[current_pic], (int) x, (int) y, (int) width_scaled, (int) height_scaled, null);
+    }
+
+    public void draw_gizmos(Graphics g)
+    {
+        g.drawOval((int) (x + x_mid_offset - radius), (int) (y + y_mid_offset - radius), (int) radius * 2, (int) radius * 2);
     }
 
     public void check_bounds()

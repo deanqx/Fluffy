@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import structs.Bounds;
+
 public class GamePanel extends JPanel implements Runnable, KeyListener
 {
     JFrame frame;
@@ -24,11 +26,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     final float fixed_update_interval = 1000.0f;
 
     Sprite cloud;
-    Vector<Sprite> enemys = new Vector<Sprite>();
-    Vector<Sprite> fogs = new Vector<Sprite>();
+    /*
+     * 0: enemys 1: fog
+     */
+    Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
     FogGen fog_gen;
     EnemyGen enemy_gen;
 
+    boolean gizmos_enabled = false;
     boolean key_up;
     boolean key_left;
     boolean key_down;
@@ -38,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         this.setPreferredSize(new Dimension(w, h));
         this.setBackground(new Color(89, 108, 171, 255));
-        frame = new JFrame("GameDemo");
+        frame = new JFrame("Fluffy");
         frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(this);
@@ -55,14 +60,26 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     private void init()
     {
         cloud = new Sprite(this, Sprite.Tag.Cloud, load_pics("res/fluffy.png", 4), 372, 400, 2.0f, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width), 500, 0.3f);
+        cloud.x_mid_offset -= 4.0f;
+        cloud.y_mid_offset += 6.0f;
+        cloud.radius -= 18.0f;
+
+        actors.add(new Vector<>());
+        actors.add(new Vector<>());
 
         BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
-        enemy_gen = new EnemyGen(this, enemys, enemy_prefab, 2.0f, 0.05f);
+        enemy_gen = new EnemyGen(this, actors.get(0), enemy_prefab, 2.0f, 0.05f);
         enemy_gen.spawn(3);
 
         BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
-        fog_gen = new FogGen(this, fogs, fog_prefab, 0.5f, 1.2f);
+        fog_gen = new FogGen(this, actors.get(1), fog_prefab, 0.5f, 1.2f);
         fog_gen.spawn(10, 0.03f);
+    }
+
+    private void reset()
+    {
+        actors.clear();
+        init();
     }
 
     // Bilder müssen horizontal hintereinander in einem Bild sein
@@ -92,14 +109,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         cloud.move();
 
-        for (Sprite it : enemys)
+        for (Vector<Sprite> layer : actors)
         {
-            it.move();
-        }
-
-        for (Sprite it : fogs)
-        {
-            it.move();
+            for (Sprite it : layer)
+            {
+                it.move();
+            }
         }
     }
 
@@ -107,14 +122,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         cloud.update();
 
-        for (Sprite it : enemys)
+        for (Vector<Sprite> layer : actors)
         {
-            it.update();
-        }
-
-        for (Sprite it : fogs)
-        {
-            it.update();
+            for (Sprite it : layer)
+            {
+                it.update();
+            }
         }
     }
 
@@ -136,22 +149,56 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             cloud.x_velocity = 0.0f;
     }
 
+    private void check_kollision()
+    {
+        for (Sprite it : actors.get(0))
+        {
+            if (cloud.distance(it) <= 0.0f)
+            {
+                reset();
+                return;
+            }
+        }
+    }
+
+    private void draw_gizmos(Graphics g)
+    {
+        if (cloud != null)
+        {
+            cloud.draw_gizmos(g);
+        }
+
+        for (Vector<Sprite> layer : actors)
+        {
+            for (Sprite it : layer)
+            {
+                it.draw_gizmos(g);
+            }
+        }
+    }
+
     @Override
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
 
         if (cloud != null)
-            cloud.draw_objects(g);
-
-        for (Sprite it : enemys)
         {
-            it.draw_objects(g);
+            cloud.draw_objects(g);
         }
 
-        for (Sprite it : fogs)
+        for (Vector<Sprite> layer : actors)
         {
-            it.draw_objects(g);
+            for (Sprite it : layer)
+            {
+                it.draw_objects(g);
+            }
+        }
+
+        if (gizmos_enabled)
+        {
+            g.setColor(Color.MAGENTA);
+            draw_gizmos(g);
         }
 
         g.setColor(Color.red);
@@ -187,6 +234,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
             check_keys();
             move_objects();
+            check_kollision();
             update();
 
             if (fixed_update_counter >= fixed_update_interval)
@@ -229,6 +277,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     @Override
     public void keyPressed(KeyEvent e)
     {
+        if (e.getKeyCode() == KeyEvent.VK_G)
+        {
+            gizmos_enabled = !gizmos_enabled;
+        }
+
         update_keys(e, true);
     }
 

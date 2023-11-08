@@ -4,19 +4,21 @@ import java.awt.image.BufferedImage;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
+import structs.Bounds;
+
 public class FogGen
 {
     private GamePanel panel;
-    private Vector<Sprite> actors;
+    private Vector<Sprite> fogs;
     private BufferedImage[] fog_prefab;
     private Bounds bounds;
     private final float min_scale;
     private final float max_scale;
 
-    public FogGen(GamePanel panel, Vector<Sprite> actors, BufferedImage[] fog_prefab, float min_scale, float max_scale)
+    public FogGen(GamePanel panel, Vector<Sprite> fogs, BufferedImage[] fog_prefab, float min_scale, float max_scale)
     {
         this.panel = panel;
-        this.actors = actors;
+        this.fogs = fogs;
         this.fog_prefab = fog_prefab;
         // bounds = new Bounds(.0f, panel.getSize().height, .0f, panel.getSize().width);
         bounds = new Bounds(-2.0f * fog_prefab[0].getHeight() * max_scale, panel.getSize().height + fog_prefab[0].getHeight() * max_scale, -2.0f * fog_prefab[0].getWidth() * max_scale, panel.getSize().width + fog_prefab[0].getWidth() * max_scale);
@@ -40,7 +42,7 @@ public class FogGen
             new_fog.x_velocity = speed * x_vel_variance;
             new_fog.y_velocity = speed * y_vel_variance;
 
-            actors.add(new_fog);
+            fogs.add(new_fog);
         }
     }
 
@@ -48,9 +50,9 @@ public class FogGen
     {
         ThreadLocalRandom t = ThreadLocalRandom.current();
 
-        for (Sprite fog : actors)
+        for (Sprite fog : fogs)
         {
-            if (fog.tag != Sprite.Tag.Fog || !fog.bounds.hit)
+            if (!fog.bounds.hit)
             {
                 continue;
             }
