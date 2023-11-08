@@ -13,7 +13,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
 
     protected final Tag tag;
     protected final float scale;
-    protected final float speed;
+    protected float speed;
     protected float x_velocity;
     protected float y_velocity;
     protected final float width_scaled;
@@ -93,7 +93,7 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
         }
     }
 
-    public void after_move()
+    public void update()
     {
         if (pics.length > 1)
         {

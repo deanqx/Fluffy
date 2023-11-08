@@ -24,8 +24,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     final float fixed_update_interval = 1000.0f;
 
     Sprite cloud;
+    Vector<Sprite> enemys = new Vector<Sprite>();
+    Vector<Sprite> fogs = new Vector<Sprite>();
     FogGen fog_gen;
-    Vector<Sprite> actors;
+    EnemyGen enemy_gen;
 
     boolean key_up;
     boolean key_left;
@@ -44,8 +46,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         frame.pack();
         frame.setVisible(true);
 
-        actors = new Vector<Sprite>();
-
         init();
 
         Thread t = new Thread(this);
@@ -55,10 +55,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     private void init()
     {
         cloud = new Sprite(this, Sprite.Tag.Cloud, load_pics("res/fluffy.png", 4), 372, 400, 2.0f, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width), 500, 0.3f);
-        actors.add(cloud);
+
+        BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
+        enemy_gen = new EnemyGen(this, enemys, enemy_prefab, 2.0f, 0.05f);
+        enemy_gen.spawn(3);
 
         BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
-        fog_gen = new FogGen(this, actors, fog_prefab, 0.5f, 1.2f);
+        fog_gen = new FogGen(this, fogs, fog_prefab, 0.5f, 1.2f);
         fog_gen.spawn(10, 0.03f);
     }
 
@@ -87,19 +90,31 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void move_objects()
     {
-        for (Sprite it : actors)
+        cloud.move();
+
+        for (Sprite it : enemys)
+        {
+            it.move();
+        }
+
+        for (Sprite it : fogs)
         {
             it.move();
         }
     }
 
-    private void after_move()
+    private void update()
     {
-        fog_gen.redirect();
+        cloud.update();
 
-        for (Sprite it : actors)
+        for (Sprite it : enemys)
         {
-            it.after_move();
+            it.update();
+        }
+
+        for (Sprite it : fogs)
+        {
+            it.update();
         }
     }
 
@@ -126,30 +141,42 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         super.paintComponent(g);
 
-        for (Sprite it : actors)
+        if (cloud != null)
+            cloud.draw_objects(g);
+
+        for (Sprite it : enemys)
+        {
+            it.draw_objects(g);
+        }
+
+        for (Sprite it : fogs)
         {
             it.draw_objects(g);
         }
 
         g.setColor(Color.red);
-        g.drawString(String.format("%.1f", fps) + " fps", 10, 20);
+        g.drawString(String.format("%.1f fps", fps), 10, 20);
     }
 
     public void fixed_update()
     {
-        for (int i = actors.size() - 1; i >= 0; i--)
-        {
-            if (actors.get(i).to_remove)
-            {
-                actors.remove(i);
-            }
-        }
+        enemy_gen.reposition();
+        fog_gen.redirect();
+
+        // for (int i = actors.size() - 1; i >= 0; i--)
+        // {
+        // if (actors.get(i).to_remove)
+        // {
+        // actors.remove(i);
+        // }
+        // }
     }
 
     @Override
     public void run()
     {
         long last = System.nanoTime();
+
         while (frame.isVisible())
         {
             // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
@@ -160,7 +187,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
             check_keys();
             move_objects();
-            after_move();
+            update();
 
             if (fixed_update_counter >= fixed_update_interval)
             {

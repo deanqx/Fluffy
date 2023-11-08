@@ -13,7 +13,7 @@
     </target>
 
     <target name="build" depends="init">
-        <javac srcdir="${src.dir}" destdir="${build.dir}">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
             <classpath>
             </classpath>
         </javac>
