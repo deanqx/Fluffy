@@ -26,12 +26,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     final float fixed_update_interval = 1000.0f;
 
     Sprite cloud;
-    /*
-     * 0: enemys 1: fog
-     */
+    // 0: pickups 1: powerups 2: enemys 3: fogs
     Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
-    FogGen fog_gen;
+    PowerupGen powerup_gen;
     EnemyGen enemy_gen;
+    FogGen fog_gen;
 
     boolean gizmos_enabled = false;
     boolean key_up;
@@ -59,20 +58,27 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void init()
     {
-        cloud = new Sprite(this, Sprite.Tag.Cloud, load_pics("res/fluffy.png", 4), 372, 400, 2.0f, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width), 500, 0.3f);
+        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 372, 400, 2.0f, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width), 500, 0.3f);
         cloud.x_mid_offset -= 4.0f;
         cloud.y_mid_offset += 6.0f;
         cloud.radius -= 18.0f;
 
         actors.add(new Vector<>());
         actors.add(new Vector<>());
+        actors.add(new Vector<>());
+        actors.add(new Vector<>());
+
+        BufferedImage[] pickup_prefab = load_pics("res/bird_pickup.png", 1);
+        BufferedImage[] powerup_prefab = load_pics("res/bird.png", 5);
+        powerup_gen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), pickup_prefab, powerup_prefab, 2.0f, 0.03f, 0.3f);
+        powerup_gen.spawn(1);
 
         BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
-        enemy_gen = new EnemyGen(this, actors.get(0), enemy_prefab, 2.0f, 0.05f);
+        enemy_gen = new EnemyGen(this, actors.get(2), enemy_prefab, 2.0f, 0.05f);
         enemy_gen.spawn(3);
 
         BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
-        fog_gen = new FogGen(this, actors.get(1), fog_prefab, 0.5f, 1.2f);
+        fog_gen = new FogGen(this, actors.get(3), fog_prefab, 0.5f, 1.2f);
         fog_gen.spawn(10, 0.03f);
     }
 
@@ -108,6 +114,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     private void move_objects()
     {
         cloud.move();
+        powerup_gen.move_all();
 
         for (Vector<Sprite> layer : actors)
         {
@@ -152,6 +159,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     private void check_kollision()
     {
         for (Sprite it : actors.get(0))
+        {
+            if (cloud.distance(it) <= 0.0f)
+            {
+                it.to_remove = true;
+                powerup_gen.pickup();
+            }
+        }
+
+        for (Sprite powerup : actors.get(1))
+        {
+            for (Sprite enemy : actors.get(2))
+            {
+                if (powerup.distance(enemy) <= 0.0f)
+                {
+                    powerup.to_remove = true;
+                    enemy.to_remove = true;
+                    break;
+                }
+            }
+        }
+
+        for (Sprite it : actors.get(2))
         {
             if (cloud.distance(it) <= 0.0f)
             {
@@ -207,16 +236,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     public void fixed_update()
     {
+        powerup_gen.clean();
         enemy_gen.reposition();
         fog_gen.redirect();
-
-        // for (int i = actors.size() - 1; i >= 0; i--)
-        // {
-        // if (actors.get(i).to_remove)
-        // {
-        // actors.remove(i);
-        // }
-        // }
     }
 
     @Override
@@ -241,6 +263,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             {
                 fixed_update_counter = 0.0f;
                 fixed_update();
+            }
+
+            for (Vector<Sprite> it : actors)
+            {
+                for (int i = it.size() - 1; i >= 0; i--)
+                {
+                    if (it.get(i).to_remove)
+                    {
+                        it.remove(i);
+                    }
+                }
             }
 
             repaint();

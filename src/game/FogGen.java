@@ -38,7 +38,7 @@ public class FogGen
             float x_vel_variance = t.nextFloat(0.8f, 1.0f);
             float y_vel_variance = t.nextFloat(0.8f, 1.0f);
 
-            Sprite new_fog = new Sprite(panel, Sprite.Tag.Fog, fog_prefab, x, y, scale, bounds, 0, speed);
+            Sprite new_fog = new Sprite(panel, fog_prefab, x, y, scale, bounds, 0, speed);
             new_fog.x_velocity = speed * x_vel_variance;
             new_fog.y_velocity = speed * y_vel_variance;
 

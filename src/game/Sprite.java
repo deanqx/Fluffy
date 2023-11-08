@@ -3,18 +3,12 @@ package game;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Vector;
 
 import structs.Bounds;
-import structs.Pos;
 
-public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
+public class Sprite extends Rectangle2D.Double
 {
-    enum Tag
-    {
-        Cloud, Fog, Enemy
-    }
-
-    protected final Tag tag;
     protected final float scale;
     protected float speed;
     protected float x_mid_offset;
@@ -33,10 +27,10 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
     private float animation = 0.0f;
     private BufferedImage[] pics;
     private int current_pic = 0;
+    private Vector<Sprite> childs = new Vector<Sprite>();
 
-    public Sprite(GamePanel p, Tag tag, BufferedImage[] imgs, float x, float y, float scale, Bounds b, int delay, float speed)
+    public Sprite(GamePanel p, BufferedImage[] imgs, float x, float y, float scale, Bounds b, int delay, float speed)
     {
-        this.tag = tag;
         this.speed = speed;
         pics = imgs;
         this.x = x;
@@ -131,9 +125,25 @@ public class Sprite extends Rectangle2D.Double implements Drawable, Moveable
         check_bounds();
     }
 
+    public void add_child(Sprite child)
+    {
+        child.x += x;
+        child.y += y;
+        childs.add(child);
+    }
+
     public void move()
     {
-        x += x_velocity * panel.deltaTime;
-        y += y_velocity * panel.deltaTime;
+        float x_moved = x_velocity * panel.deltaTime;
+        float y_moved = y_velocity * panel.deltaTime;
+
+        x += x_moved;
+        y += y_moved;
+
+        for (Sprite child : childs)
+        {
+            child.x += x_moved;
+            child.y += y_moved;
+        }
     }
 }

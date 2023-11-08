@@ -35,7 +35,7 @@ public class EnemyGen
             float x = t.nextFloat(1.0f, bounds.right - enemy_prefab[0].getWidth() * scale - 1.0f);
             float y = t.nextFloat(bounds.top, -enemy_prefab[0].getHeight() * scale);
 
-            Sprite new_enemy = new Sprite(panel, Sprite.Tag.Enemy, enemy_prefab, x, y, scale, bounds, 500, speed);
+            Sprite new_enemy = new Sprite(panel, enemy_prefab, x, y, scale, bounds, 500, speed);
             new_enemy.y_velocity = speed;
 
             enemys.add(new_enemy);
