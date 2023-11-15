@@ -2,13 +2,13 @@ package structs;
 
 public class Bounds
 {
-    public float top;
-    public float bottom;
-    public float left;
-    public float right;
+    public double top;
+    public double bottom;
+    public double left;
+    public double right;
     public boolean hit;
 
-    public Bounds(float top, float bottom, float left, float right)
+    public Bounds(double top, double bottom, double left, double right)
     {
         this.top = top;
         this.bottom = bottom;

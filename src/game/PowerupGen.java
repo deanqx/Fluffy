@@ -15,15 +15,15 @@ public class PowerupGen
     private BufferedImage[] pickup_prefab;
     private BufferedImage[] powerup_prefab;
     private Bounds bounds;
-    private final float falling_speed;
-    private final float rotation_speed;
-    private float rotation = 0.0f;
+    private final double falling_speed;
+    private final double rotation_speed;
+    private double rotation = 0.0;
 
-    private final float pickup_width_scaled;
-    private final float pickup_height_scaled;
-    private final float scale;
+    private final double pickup_width_scaled;
+    private final double pickup_height_scaled;
+    private final double scale;
 
-    public PowerupGen(GamePanel panel, Sprite cloud, Vector<Sprite> pickups, Vector<Sprite> powerups, BufferedImage[] pickup_prefab, BufferedImage[] powerup_prefab, float scale, float falling_speed, float rotation_speed)
+    public PowerupGen(GamePanel panel, Sprite cloud, Vector<Sprite> pickups, Vector<Sprite> powerups, BufferedImage[] pickup_prefab, BufferedImage[] powerup_prefab, double scale, double falling_speed, double rotation_speed)
     {
         this.panel = panel;
         this.cloud = cloud;
@@ -38,7 +38,7 @@ public class PowerupGen
 
         pickup_width_scaled = pickup_prefab[0].getWidth() * scale;
         pickup_height_scaled = pickup_prefab[0].getHeight() * scale;
-        bounds = new Bounds(-pickup_height_scaled, panel.getSize().height + pickup_height_scaled, .0f, panel.getSize().width);
+        bounds = new Bounds(-pickup_height_scaled, panel.getSize().height + pickup_height_scaled, 0.0, panel.getSize().width);
     }
 
     public void spawn(int n)
@@ -47,8 +47,8 @@ public class PowerupGen
 
         for (int i = 0; i < n; i++)
         {
-            float x = t.nextFloat(1.0f, bounds.right - pickup_width_scaled - 1.0f);
-            float y = bounds.top;
+            double x = t.nextDouble(1.0, bounds.right - pickup_width_scaled - 1.0);
+            double y = bounds.top;
 
             Sprite new_pickup = new Sprite(panel, pickup_prefab, x, y, scale, bounds, 0, falling_speed);
             new_pickup.y_velocity = falling_speed;
@@ -59,8 +59,9 @@ public class PowerupGen
 
     public void pickup()
     {
-        float x = cloud.x_mid_offset - 13.0f;
-        float y = -cloud.y_mid_offset - 6.0f;
+        // TODO Spawning multiple
+        double x = Math.cos(2.0 * Math.PI * rotation) * (cloud.x_mid_offset - 13.0);
+        double y = Math.sin(2.0 * Math.PI * rotation) * (-cloud.y_mid_offset - 6.0);
 
         Sprite powerup = new Sprite(panel, powerup_prefab, x, y, scale, bounds, 200, rotation_speed);
 
@@ -69,7 +70,7 @@ public class PowerupGen
 
         if (powerups.size() == 1)
         {
-            rotation = 0.0f;
+            rotation = 0.0;
         }
     }
 
@@ -77,15 +78,15 @@ public class PowerupGen
     {
         for (Sprite powerup : powerups)
         {
-            powerup.x += Math.cos(2.0f * (float) Math.PI * rotation);
-            powerup.y += Math.sin(2.0f * (float) Math.PI * rotation);
+            // powerup.x += Math.cos(2.0f * (double) Math.PI * rotation);
+            // powerup.y += Math.sin(2.0f * (double) Math.PI * rotation);
         }
 
-        rotation += panel.deltaTime * rotation_speed * 1e-3f;
+        rotation += panel.deltaTime * rotation_speed * 1e-3;
 
-        if (rotation > 1.0f)
+        if (rotation > 1.0)
         {
-            rotation = .0f;
+            rotation = 0.0;
         }
     }
 

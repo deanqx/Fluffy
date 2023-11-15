@@ -2,13 +2,13 @@ package structs;
 
 public class Pos
 {
-    public float x;
-    public float y;
+    public double x;
+    public double y;
 
-    public float distance(Pos to)
+    public double distance(Pos to)
     {
-        float a = to.x - x;
-        float b = to.y - y;
-        return (float) Math.sqrt(a * a + b * b);
+        double a = to.x - x;
+        double b = to.y - y;
+        return (double) Math.sqrt(a * a + b * b);
     }
 }

@@ -20,10 +20,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 {
     JFrame frame;
 
-    float fps = 0.0f;
-    float deltaTime;
-    float fixed_update_counter;
-    final float fixed_update_interval = 1000.0f;
+    double fps = 0.0f;
+    double deltaTime;
+    double fixed_update_counter;
+    final double fixed_update_interval = 1000.0f;
 
     Sprite cloud;
     // 0: pickups 1: powerups 2: enemys 3: fogs
@@ -71,11 +71,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         BufferedImage[] pickup_prefab = load_pics("res/bird_pickup.png", 1);
         BufferedImage[] powerup_prefab = load_pics("res/bird.png", 5);
         powerup_gen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), pickup_prefab, powerup_prefab, 2.0f, 0.03f, 0.3f);
-        powerup_gen.spawn(1);
+        powerup_gen.spawn(2);
 
         BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
         enemy_gen = new EnemyGen(this, actors.get(2), enemy_prefab, 2.0f, 0.05f);
-        enemy_gen.spawn(3);
+        enemy_gen.spawn(0);
 
         BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
         fog_gen = new FogGen(this, actors.get(3), fog_prefab, 0.5f, 1.2f);
@@ -249,7 +249,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         while (frame.isVisible())
         {
             // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
-            deltaTime = (float) (System.nanoTime() - last) * 1e-6f;
+            deltaTime = (double) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
             fixed_update_counter += deltaTime;
             fps = 1e3f / deltaTime;
