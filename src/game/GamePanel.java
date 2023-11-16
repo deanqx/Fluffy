@@ -62,6 +62,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         cloud.x_mid_offset -= 4.0f;
         cloud.y_mid_offset += 6.0f;
         cloud.radius -= 18.0f;
+        cloud.add_gizmo_circle(Color.GREEN, (int) cloud.x_mid_offset, (int) cloud.y_mid_offset, 64);
 
         actors.add(new Vector<>());
         actors.add(new Vector<>());
@@ -226,7 +227,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         if (gizmos_enabled)
         {
-            g.setColor(Color.MAGENTA);
             draw_gizmos(g);
         }
 

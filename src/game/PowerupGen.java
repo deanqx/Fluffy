@@ -31,7 +31,6 @@ public class PowerupGen
         this.powerups = powerups;
         this.pickup_prefab = pickup_prefab;
         this.powerup_prefab = powerup_prefab;
-        // bounds = new Bounds(.0f, panel.getSize().height, .0f, panel.getSize().width);
         this.falling_speed = falling_speed;
         this.rotation_speed = rotation_speed;
         this.scale = scale;
@@ -59,27 +58,38 @@ public class PowerupGen
 
     public void pickup()
     {
-        // TODO Spawning multiple
-        double x = Math.cos(2.0 * Math.PI * rotation) * (cloud.x_mid_offset - 13.0);
-        double y = Math.sin(2.0 * Math.PI * rotation) * (-cloud.y_mid_offset - 6.0);
+        // TODO Testing here
+        // double x = cloud.x_mid_offset;
+        // double y = cloud.y_mid_offset;
+        double x = cloud.x_mid_offset - 18.0;
+        double y = -cloud.y_mid_offset - 5.0;
+        // double x = Math.cos(2.0 * Math.PI * 0.0) * (cloud.x_mid_offset - 13.0);
+        // double y = Math.sin(2.0 * Math.PI * 0.0) * (-cloud.y_mid_offset - 6.0);
 
-        Sprite powerup = new Sprite(panel, powerup_prefab, x, y, scale, bounds, 200, rotation_speed);
-
-        cloud.add_child(powerup);
-        powerups.add(powerup);
-
-        if (powerups.size() == 1)
+        if (powerups.size() == 0)
         {
             rotation = 0.0;
         }
+
+        // if (powerups.size() == 1)
+        // {
+        // System.out.println("here");
+        // x = Math.cos(2.0 * Math.PI * 0.5) * (cloud.x_mid_offset - 13.0);
+        // y = Math.sin(2.0 * Math.PI * 0.5) * (-cloud.y_mid_offset - 6.0);
+        // }
+
+        Sprite powerup = new Sprite(panel, powerup_prefab, x, y, scale, null, 200, rotation_speed);
+
+        cloud.add_child(powerup);
+        powerups.add(powerup);
     }
 
     public void move_all()
     {
         for (Sprite powerup : powerups)
         {
-            // powerup.x += Math.cos(2.0f * (double) Math.PI * rotation);
-            // powerup.y += Math.sin(2.0f * (double) Math.PI * rotation);
+            powerup.x += Math.cos(2.0f * (double) Math.PI * rotation);
+            powerup.y += Math.sin(2.0f * (double) Math.PI * rotation);
         }
 
         rotation += panel.deltaTime * rotation_speed * 1e-3;

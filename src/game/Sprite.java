@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -27,7 +28,12 @@ public class Sprite extends Rectangle2D.Double
     private double animation = 0.0f;
     private BufferedImage[] pics;
     private int current_pic = 0;
-    private Vector<Sprite> childs = new Vector<Sprite>();
+    private Vector<Sprite> childs = new Vector<>();
+
+    private Vector<Color> added_gizmos_c = new Vector<>();
+    private Vector<Integer> added_gizmos_x = new Vector<>();
+    private Vector<Integer> added_gizmos_y = new Vector<>();
+    private Vector<Integer> added_gizmos_r = new Vector<>();
 
     public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, Bounds b, int delay, double speed)
     {
@@ -45,7 +51,10 @@ public class Sprite extends Rectangle2D.Double
         y_mid_offset = height_scaled / 2.0f;
         radius = Math.max(width_scaled, height_scaled) / 2.0f;
         panel = p;
-        bounds = b.clone();
+        if (b == null)
+            bounds = null;
+        else
+            bounds = b.clone();
     }
 
     public double distance(Sprite to)
@@ -71,13 +80,37 @@ public class Sprite extends Rectangle2D.Double
         g.drawImage(pics[current_pic], (int) x, (int) y, (int) width_scaled, (int) height_scaled, null);
     }
 
+    void draw_circle_by_center(Graphics g, Color c, int x_center, int y_center, int r)
+    {
+        g.setColor(c);
+        g.drawOval(x_center - r, y_center - r, r * 2, r * 2);
+    }
+
+    public void add_gizmo_circle(Color c, int x_center, int y_center, int r)
+    {
+        added_gizmos_c.add(c);
+        added_gizmos_x.add(x_center);
+        added_gizmos_y.add(y_center);
+        added_gizmos_r.add(r);
+    }
+
     public void draw_gizmos(Graphics g)
     {
-        g.drawOval((int) (x + x_mid_offset - radius), (int) (y + y_mid_offset - radius), (int) radius * 2, (int) radius * 2);
+        draw_circle_by_center(g, Color.MAGENTA, (int) (x + x_mid_offset), (int) (y + y_mid_offset), (int) radius);
+
+        for (int i = 0; i < added_gizmos_x.size(); i++)
+        {
+            draw_circle_by_center(g, added_gizmos_c.get(i), (int) x + added_gizmos_x.get(i), (int) y + added_gizmos_y.get(i), added_gizmos_r.get(i));
+        }
     }
 
     public void check_bounds()
     {
+        if (bounds == null)
+        {
+            return;
+        }
+
         if (bounds.hit && x > bounds.left && y > bounds.top && x + width_scaled < bounds.right && y + height_scaled < bounds.bottom)
         {
             bounds.hit = false;
