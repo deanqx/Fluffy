@@ -20,10 +20,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 {
     JFrame frame;
 
-    double fps = 0.0f;
+    double fps = 0.0;
     double deltaTime;
     double fixed_update_counter;
-    final double fixed_update_interval = 1000.0f;
+    final double fixed_update_interval = 1000.0;
 
     Sprite cloud;
     // 0: pickups 1: powerups 2: enemys 3: fogs
@@ -32,7 +32,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     EnemyGen enemy_gen;
     FogGen fog_gen;
 
-    boolean debug_mode = false;
+    boolean debug_mode = true;
     boolean key_up;
     boolean key_left;
     boolean key_down;
@@ -58,11 +58,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void init()
     {
-        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 372, 400, 2.0f, new Bounds(.0f, this.getSize().height, .0f, this.getSize().width), 500, 0.3f);
-        cloud.x_mid_offset -= 4.0f;
-        cloud.y_mid_offset += 6.0f;
-        cloud.radius -= 18.0f;
-        cloud.add_gizmo_circle(Color.GREEN, (int) cloud.x_mid_offset, (int) cloud.y_mid_offset, 64);
+        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 372, 400, 2.0, new Bounds(.0, this.getSize().height, .0, this.getSize().width), 500, 0.3);
+        cloud.x_mid_offset -= 4.0;
+        cloud.y_mid_offset += 6.0;
+        cloud.radius -= 18.0;
 
         actors.add(new Vector<>());
         actors.add(new Vector<>());
@@ -71,16 +70,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         BufferedImage[] pickup_prefab = load_pics("res/bird_pickup.png", 1);
         BufferedImage[] powerup_prefab = load_pics("res/bird.png", 5);
-        powerup_gen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), pickup_prefab, powerup_prefab, 2.0f, 0.03f, 0.3f);
+        powerup_gen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), pickup_prefab, powerup_prefab, 2.0, 0.03, 0.3, 64.0);
+        cloud.add_gizmo_circle(Color.GREEN, (int) cloud.x_mid_offset, (int) cloud.y_mid_offset, 64);
         powerup_gen.spawn(2);
 
         BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
-        enemy_gen = new EnemyGen(this, actors.get(2), enemy_prefab, 2.0f, 0.05f);
+        enemy_gen = new EnemyGen(this, actors.get(2), enemy_prefab, 2.0, 0.05);
         enemy_gen.spawn(0);
 
         BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
-        fog_gen = new FogGen(this, actors.get(3), fog_prefab, 0.5f, 1.2f);
-        fog_gen.spawn(10, 0.03f);
+        fog_gen = new FogGen(this, actors.get(3), fog_prefab, 0.5, 1.2);
+        fog_gen.spawn(10, 0.03);
     }
 
     private void reset()
@@ -152,16 +152,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             cloud.x_velocity = cloud.speed;
 
         if (key_up == key_down)
-            cloud.y_velocity = 0.0f;
+            cloud.y_velocity = 0.0;
         if (key_left == key_right)
-            cloud.x_velocity = 0.0f;
+            cloud.x_velocity = 0.0;
     }
 
     private void check_kollision()
     {
         for (Sprite it : actors.get(0))
         {
-            if (cloud.distance(it) <= 0.0f)
+            if (cloud.distance(it) <= 0.0)
             {
                 it.to_remove = true;
                 powerup_gen.pickup();
@@ -172,7 +172,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         {
             for (Sprite enemy : actors.get(2))
             {
-                if (powerup.distance(enemy) <= 0.0f)
+                if (powerup.distance(enemy) <= 0.0)
                 {
                     powerup.to_remove = true;
                     enemy.to_remove = true;
@@ -183,7 +183,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         for (Sprite it : actors.get(2))
         {
-            if (cloud.distance(it) <= 0.0f)
+            if (cloud.distance(it) <= 0.0)
             {
                 reset();
                 return;
@@ -249,10 +249,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         while (frame.isVisible())
         {
             // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
-            deltaTime = (double) (System.nanoTime() - last) * 1e-6f;
+            deltaTime = (double) (System.nanoTime() - last) * 1e-6;
             last = System.nanoTime();
             fixed_update_counter += deltaTime;
-            fps = 1e3f / deltaTime;
+            fps = 1e3 / deltaTime;
 
             check_keys();
             move_objects();
@@ -261,7 +261,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
             if (fixed_update_counter >= fixed_update_interval)
             {
-                fixed_update_counter = 0.0f;
+                fixed_update_counter = 0.0;
                 fixed_update();
             }
 

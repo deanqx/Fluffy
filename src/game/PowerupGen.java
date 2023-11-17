@@ -17,13 +17,14 @@ public class PowerupGen
     private Bounds bounds;
     private final double falling_speed;
     private final double rotation_speed;
+    private final double rotation_radius;
     private double rotation = 0.0;
 
     private final double pickup_width_scaled;
     private final double pickup_height_scaled;
     private final double scale;
 
-    public PowerupGen(GamePanel panel, Sprite cloud, Vector<Sprite> pickups, Vector<Sprite> powerups, BufferedImage[] pickup_prefab, BufferedImage[] powerup_prefab, double scale, double falling_speed, double rotation_speed)
+    public PowerupGen(GamePanel panel, Sprite cloud, Vector<Sprite> pickups, Vector<Sprite> powerups, BufferedImage[] pickup_prefab, BufferedImage[] powerup_prefab, double scale, double falling_speed, double rotation_speed, double rotation_radius)
     {
         this.panel = panel;
         this.cloud = cloud;
@@ -33,6 +34,7 @@ public class PowerupGen
         this.powerup_prefab = powerup_prefab;
         this.falling_speed = falling_speed;
         this.rotation_speed = rotation_speed;
+        this.rotation_radius = rotation_radius;
         this.scale = scale;
 
         pickup_width_scaled = pickup_prefab[0].getWidth() * scale;
@@ -58,27 +60,20 @@ public class PowerupGen
 
     public void pickup()
     {
-        // TODO Testing here
-        // double x = cloud.x_mid_offset;
-        // double y = cloud.y_mid_offset;
-        double x = cloud.x_mid_offset - 18.0;
-        double y = -cloud.y_mid_offset - 5.0;
-        // double x = Math.cos(2.0 * Math.PI * 0.0) * (cloud.x_mid_offset - 13.0);
-        // double y = Math.sin(2.0 * Math.PI * 0.0) * (-cloud.y_mid_offset - 6.0);
+        Sprite powerup = new Sprite(panel, powerup_prefab, 0.0, 0.0, scale, null, 200, rotation_speed);
 
         if (powerups.size() == 0)
         {
-            rotation = 0.0;
+            rotation = 0.25;
         }
 
-        // if (powerups.size() == 1)
-        // {
-        // System.out.println("here");
-        // x = Math.cos(2.0 * Math.PI * 0.5) * (cloud.x_mid_offset - 13.0);
-        // y = Math.sin(2.0 * Math.PI * 0.5) * (-cloud.y_mid_offset - 6.0);
-        // }
+        // TODO left here
+        double cos_pos = 2.0 * rotation_radius * Math.cos(2.0 * Math.PI * rotation);
+        // double cos_pos = 0.0;
+        double sin_pos = 2.0 * rotation_radius * Math.sin(2.0 * Math.PI * rotation);
 
-        Sprite powerup = new Sprite(panel, powerup_prefab, x, y, scale, null, 200, rotation_speed);
+        powerup.x = cloud.x_mid_offset - powerup.x_mid_offset - rotation_radius + cos_pos;
+        powerup.y = cloud.y_mid_offset - powerup.y_mid_offset - rotation_radius + sin_pos;
 
         cloud.add_child(powerup);
         powerups.add(powerup);
@@ -88,8 +83,8 @@ public class PowerupGen
     {
         for (Sprite powerup : powerups)
         {
-            powerup.x += Math.cos(2.0f * (double) Math.PI * rotation);
-            powerup.y += Math.sin(2.0f * (double) Math.PI * rotation);
+            // powerup.x += Math.cos(2.0f * (double) Math.PI * rotation);
+            // powerup.y += Math.sin(2.0f * (double) Math.PI * rotation);
         }
 
         rotation += panel.deltaTime * rotation_speed * 1e-3;

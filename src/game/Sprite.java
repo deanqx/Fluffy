@@ -51,6 +51,7 @@ public class Sprite extends Rectangle2D.Double
         y_mid_offset = height_scaled / 2.0f;
         radius = Math.max(width_scaled, height_scaled) / 2.0f;
         panel = p;
+
         if (b == null)
             bounds = null;
         else
