@@ -32,7 +32,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     EnemyGen enemy_gen;
     FogGen fog_gen;
 
-    boolean gizmos_enabled = false;
+    boolean debug_mode = false;
     boolean key_up;
     boolean key_left;
     boolean key_down;
@@ -225,13 +225,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             }
         }
 
-        if (gizmos_enabled)
+        if (debug_mode)
         {
             draw_gizmos(g);
-        }
 
-        g.setColor(Color.red);
-        g.drawString(String.format("%.1f fps", fps), 10, 20);
+            g.setColor(Color.red);
+            g.drawString(String.format("%.1f fps", fps), 10, 20);
+        }
     }
 
     public void fixed_update()
@@ -312,7 +312,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         if (e.getKeyCode() == KeyEvent.VK_G)
         {
-            gizmos_enabled = !gizmos_enabled;
+            debug_mode = !debug_mode;
         }
 
         update_keys(e, true);
