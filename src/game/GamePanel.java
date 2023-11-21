@@ -248,7 +248,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         while (frame.isVisible())
         {
-            // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert multiplezieren
+            // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert
+            // multiplezieren
             deltaTime = (double) (System.nanoTime() - last) * 1e-6;
             last = System.nanoTime();
             fixed_update_counter += deltaTime;
