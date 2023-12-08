@@ -61,12 +61,12 @@ public class FogGen
 
             if (top_or_left)
             {
-                fog.x = (double) t.nextDouble(bounds.left, bounds.right - fog.width_scaled);
+                fog.x = t.nextDouble(bounds.left, bounds.right - fog.width_scaled);
                 fog.y = bounds.top + 1.0;
             } else
             {
                 fog.x = bounds.left + 1.0;
-                fog.y = (double) t.nextDouble(bounds.top, bounds.bottom - fog.height_scaled);
+                fog.y = t.nextDouble(bounds.top, bounds.bottom - fog.height_scaled);
             }
 
             double x_vel_variance = t.nextDouble(0.8, 1.0);

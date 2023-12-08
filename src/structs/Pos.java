@@ -9,6 +9,6 @@ public class Pos
     {
         double a = to.x - x;
         double b = to.y - y;
-        return (double) Math.sqrt(a * a + b * b);
+        return Math.sqrt(a * a + b * b);
     }
 }

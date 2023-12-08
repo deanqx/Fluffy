@@ -35,18 +35,18 @@ public class Sprite extends Rectangle2D.Double
     private Vector<Integer> added_gizmos_y = new Vector<>();
     private Vector<Integer> added_gizmos_r = new Vector<>();
 
-    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, Bounds b, int delay, double speed)
+    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, Bounds b, double delay, double speed)
     {
         this.speed = speed;
         pics = imgs;
         this.x = x;
         this.y = y;
         this.scale = scale;
-        this.delay = (double) delay;
+        this.delay = delay;
         width = pics[0].getWidth();
         height = pics[0].getHeight();
-        width_scaled = (double) width * scale;
-        height_scaled = (double) height * scale;
+        width_scaled = width * scale;
+        height_scaled = height * scale;
         x_mid_offset = width_scaled / 2.0f;
         y_mid_offset = height_scaled / 2.0f;
         radius = Math.max(width_scaled, height_scaled) / 2.0f;
@@ -60,10 +60,10 @@ public class Sprite extends Rectangle2D.Double
 
     public double distance(Sprite to)
     {
-        double a = ((double) to.x + to.x_mid_offset) - ((double) x + x_mid_offset);
-        double b = ((double) to.y + to.y_mid_offset) - ((double) y + y_mid_offset);
+        double a = (to.x + to.x_mid_offset) - (x + x_mid_offset);
+        double b = (to.y + to.y_mid_offset) - (y + y_mid_offset);
 
-        return (double) Math.sqrt(a * a + b * b) - radius - to.radius;
+        return Math.sqrt(a * a + b * b) - radius - to.radius;
     }
 
     private void compute_animation()
@@ -161,8 +161,8 @@ public class Sprite extends Rectangle2D.Double
 
     public void add_child(Sprite child)
     {
-        child.x += x;
-        child.y += y;
+        child.x += x + x_mid_offset - child.x_mid_offset;
+        child.y += y + y_mid_offset - child.y_mid_offset;
         childs.add(child);
     }
 

@@ -60,20 +60,50 @@ public class PowerupGen
 
     public void pickup()
     {
+        if (powerups.size() == 8)
+        {
+            return;
+        }
+
         Sprite powerup = new Sprite(panel, powerup_prefab, 0.0, 0.0, scale, null, 200, rotation_speed);
 
         if (powerups.size() == 0)
         {
-            rotation = 0.25;
+            rotation = 0.0;
         }
 
-        // TODO left here
-        double cos_pos = 2.0 * rotation_radius * Math.cos(2.0 * Math.PI * rotation);
-        // double cos_pos = 0.0;
-        double sin_pos = 2.0 * rotation_radius * Math.sin(2.0 * Math.PI * rotation);
+        double spawn_rotation = 0.0;
 
-        powerup.x = cloud.x_mid_offset - powerup.x_mid_offset - rotation_radius + cos_pos;
-        powerup.y = cloud.y_mid_offset - powerup.y_mid_offset - rotation_radius + sin_pos;
+        switch (powerups.size())
+        {
+        case 0:
+            spawn_rotation = 0.0;
+            break;
+        case 1:
+            spawn_rotation = 0.5;
+            break;
+        case 2:
+            spawn_rotation = 0.75;
+            break;
+        case 3:
+            spawn_rotation = 0.25;
+            break;
+        case 4:
+            spawn_rotation = 0.125;
+            break;
+        case 5:
+            spawn_rotation = 0.375;
+            break;
+        case 6:
+            spawn_rotation = 0.625;
+            break;
+        case 7:
+            spawn_rotation = 0.875;
+            break;
+        }
+
+        powerup.x = rotation_radius * Math.cos(2.0 * Math.PI * spawn_rotation);
+        powerup.y = rotation_radius * Math.sin(2.0 * Math.PI * spawn_rotation);
 
         cloud.add_child(powerup);
         powerups.add(powerup);
@@ -83,8 +113,8 @@ public class PowerupGen
     {
         for (Sprite powerup : powerups)
         {
-            // powerup.x += Math.cos(2.0f * (double) Math.PI * rotation);
-            // powerup.y += Math.sin(2.0f * (double) Math.PI * rotation);
+            // powerup.x = cloud.x + cloud.x_mid_offset - powerup.x_mid_offset + rotation_radius * Math.cos(2.0 * Math.PI * rotation);
+            // powerup.y = cloud.y + cloud.y_mid_offset - powerup.y_mid_offset + rotation_radius * Math.sin(2.0 * Math.PI * rotation);
         }
 
         rotation += panel.deltaTime * rotation_speed * 1e-3;
