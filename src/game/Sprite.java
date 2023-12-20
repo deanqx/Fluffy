@@ -16,10 +16,11 @@ public class Sprite extends Rectangle2D.Double
     protected double y_mid_offset;
     protected double x_velocity;
     protected double y_velocity;
-    protected final double width_scaled;
-    protected final double height_scaled;
+    protected double width_scaled;
+    protected double height_scaled;
     protected Bounds bounds;
     protected double radius;
+    public boolean visible = true;
     protected boolean to_remove = false;
 
     private GamePanel panel;
@@ -78,7 +79,17 @@ public class Sprite extends Rectangle2D.Double
 
     public void draw_objects(Graphics g)
     {
-        g.drawImage(pics[current_pic], (int) x, (int) y, (int) width_scaled, (int) height_scaled, null);
+        if (!visible)
+            return;
+
+        int _x;
+
+        if (width_scaled > 0.0)
+            _x = (int) x;
+        else
+            _x = (int) (x - width_scaled);
+
+        g.drawImage(pics[current_pic], _x, (int) y, (int) width_scaled, (int) height_scaled, null);
     }
 
     void draw_circle_by_center(Graphics g, Color c, int x_center, int y_center, int r)

@@ -61,11 +61,6 @@ public class PowerupGen
         }
     }
 
-    private double rotation_with_offset(int spawn_index)
-    {
-        return spawn_rotations[powerups.size() - 1];
-    }
-
     public void pickup()
     {
         if (powerups.size() == 8)
@@ -96,14 +91,14 @@ public class PowerupGen
             powerups.get(i).x = cloud.x + cloud.x_mid_offset - powerups.get(i).x_mid_offset + rotation_radius * Math.cos(rot);
             powerups.get(i).y = cloud.y + cloud.y_mid_offset - powerups.get(i).y_mid_offset + rotation_radius * Math.sin(rot);
 
-            if (0.8 < rot || rot < 0.2)
+            if (Math.cos(rot) < 0.6 && Math.sin(rot) < 0.8)
             {
-                System.out.println("mirror");
-                if (powerups.get(i).width > 0)
-                    powerups.get(i).width *= -1.0;
+                if (powerups.get(i).width_scaled >= 0.0)
+                    powerups.get(i).width_scaled *= -1.0;
             } else
             {
-                System.out.println("no mirror");
+                if (powerups.get(i).width_scaled < 0.0)
+                    powerups.get(i).width_scaled *= -1.0;
             }
         }
 
