@@ -24,6 +24,9 @@ public class PowerupGen
     private final double pickup_height_scaled;
     private final double scale;
 
+    private final double spawn_rotations[] =
+    { 0.0, 0.5, 0.75, 0.25, 0.125, 0.375, 0.625, 0.875 };
+
     public PowerupGen(GamePanel panel, Sprite cloud, Vector<Sprite> pickups, Vector<Sprite> powerups, BufferedImage[] pickup_prefab, BufferedImage[] powerup_prefab, double scale, double falling_speed, double rotation_speed, double rotation_radius)
     {
         this.panel = panel;
@@ -58,6 +61,11 @@ public class PowerupGen
         }
     }
 
+    private double rotation_with_offset(int spawn_index)
+    {
+        return spawn_rotations[powerups.size() - 1];
+    }
+
     public void pickup()
     {
         if (powerups.size() == 8)
@@ -72,38 +80,8 @@ public class PowerupGen
             rotation = 0.0;
         }
 
-        double spawn_rotation = 0.0;
-
-        switch (powerups.size())
-        {
-        case 0:
-            spawn_rotation = 0.0;
-            break;
-        case 1:
-            spawn_rotation = 0.5;
-            break;
-        case 2:
-            spawn_rotation = 0.75;
-            break;
-        case 3:
-            spawn_rotation = 0.25;
-            break;
-        case 4:
-            spawn_rotation = 0.125;
-            break;
-        case 5:
-            spawn_rotation = 0.375;
-            break;
-        case 6:
-            spawn_rotation = 0.625;
-            break;
-        case 7:
-            spawn_rotation = 0.875;
-            break;
-        }
-
-        powerup.x = rotation_radius * Math.cos(2.0 * Math.PI * spawn_rotation);
-        powerup.y = rotation_radius * Math.sin(2.0 * Math.PI * spawn_rotation);
+        powerup.x = rotation_radius * Math.cos(2.0 * Math.PI * spawn_rotations[powerups.size()]);
+        powerup.y = rotation_radius * Math.sin(2.0 * Math.PI * spawn_rotations[powerups.size()]);
 
         cloud.add_child(powerup);
         powerups.add(powerup);
@@ -111,10 +89,11 @@ public class PowerupGen
 
     public void move_all()
     {
-        for (Sprite powerup : powerups)
+        for (int i = 0; i < powerups.size(); i++)
         {
-            // powerup.x = cloud.x + cloud.x_mid_offset - powerup.x_mid_offset + rotation_radius * Math.cos(2.0 * Math.PI * rotation);
-            // powerup.y = cloud.y + cloud.y_mid_offset - powerup.y_mid_offset + rotation_radius * Math.sin(2.0 * Math.PI * rotation);
+            double rot = 2.0 * Math.PI * (rotation + spawn_rotations[i]);
+            powerups.get(i).x = cloud.x + cloud.x_mid_offset - powerups.get(i).x_mid_offset + rotation_radius * Math.cos(rot);
+            powerups.get(i).y = cloud.y + cloud.y_mid_offset - powerups.get(i).y_mid_offset + rotation_radius * Math.sin(rot);
         }
 
         rotation += panel.deltaTime * rotation_speed * 1e-3;
