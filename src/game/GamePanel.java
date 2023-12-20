@@ -72,8 +72,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         BufferedImage[] powerup_prefab = load_pics("res/bird.png", 5);
         powerup_gen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), pickup_prefab, powerup_prefab, 2.0, 0.03, 0.3, 64.0);
         cloud.add_gizmo_circle(Color.GREEN, (int) cloud.x_mid_offset, (int) cloud.y_mid_offset, 64);
-        powerup_gen.spawn(8);
-        // powerup_gen.pickup();
+        // powerup_gen.spawn(8);
+        powerup_gen.pickup();
         // powerup_gen.pickup();
         // powerup_gen.pickup();
         // powerup_gen.pickup();

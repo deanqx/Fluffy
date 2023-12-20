@@ -92,8 +92,19 @@ public class PowerupGen
         for (int i = 0; i < powerups.size(); i++)
         {
             double rot = 2.0 * Math.PI * (rotation + spawn_rotations[i]);
+
             powerups.get(i).x = cloud.x + cloud.x_mid_offset - powerups.get(i).x_mid_offset + rotation_radius * Math.cos(rot);
             powerups.get(i).y = cloud.y + cloud.y_mid_offset - powerups.get(i).y_mid_offset + rotation_radius * Math.sin(rot);
+
+            if (0.8 < rot || rot < 0.2)
+            {
+                System.out.println("mirror");
+                if (powerups.get(i).width > 0)
+                    powerups.get(i).width *= -1.0;
+            } else
+            {
+                System.out.println("no mirror");
+            }
         }
 
         rotation += panel.deltaTime * rotation_speed * 1e-3;
