@@ -13,7 +13,7 @@ public class EnemyGen
     private BufferedImage[] enemy_prefab;
     private Bounds bounds;
     private final double scale;
-    private double speed;
+    public double speed;
 
     public EnemyGen(GamePanel panel, Vector<Sprite> enemys, BufferedImage[] enemy_prefab, double scale, double speed)
     {
@@ -35,7 +35,7 @@ public class EnemyGen
             double x = t.nextDouble(1.0, bounds.right - enemy_prefab[0].getWidth() * scale - 1.0);
             double y = t.nextDouble(bounds.top, -enemy_prefab[0].getHeight() * scale);
 
-            Sprite new_enemy = new Sprite(panel, enemy_prefab, x, y, scale, bounds, 500, speed);
+            Sprite new_enemy = new Sprite(panel, enemy_prefab, x, y, scale, bounds, 500.0, speed);
             new_enemy.y_velocity = speed;
 
             enemys.add(new_enemy);

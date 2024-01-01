@@ -65,6 +65,7 @@ public class PowerupGen
     {
         if (powerups.size() == 8)
         {
+            panel.score += 500;
             return;
         }
 

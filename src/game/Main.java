@@ -8,6 +8,6 @@ public class Main
         System.setProperty("sun.java2d.opengl", "true");
 
         System.out.println("Working Directory: " + System.getProperty("user.dir"));
-        new GamePanel(800, 600);
+        new GamePanel();
     }
 }

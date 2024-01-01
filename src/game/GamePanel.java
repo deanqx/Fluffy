@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -25,25 +26,29 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     double fixed_update_counter;
     final double fixed_update_interval = 1000.0;
 
+    double score;
+    double score_best;
+
     Sprite cloud;
     // 0: pickups 1: powerups 2: enemys 3: fogs
     Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
     PowerupGen powerup_gen;
     EnemyGen enemy_gen;
     FogGen fog_gen;
-
-    boolean debug_mode = true;
+    
+    boolean debug_mode = false;
     boolean key_up;
     boolean key_left;
     boolean key_down;
     boolean key_right;
 
-    public GamePanel(int w, int h)
+    public GamePanel()
     {
-        this.setPreferredSize(new Dimension(w, h));
+        this.setPreferredSize(new Dimension(1000, 600));
         this.setBackground(new Color(89, 108, 171, 255));
         frame = new JFrame("Fluffy");
         frame.setLocation(100, 100);
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(this);
         frame.addKeyListener(this);
@@ -58,6 +63,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void init()
     {
+        score = 0;
+
         cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 372, 400, 2.0, new Bounds(.0, this.getSize().height, .0, this.getSize().width), 500, 0.3);
         cloud.x_mid_offset -= 4.0;
         cloud.y_mid_offset += 6.0;
@@ -72,19 +79,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         BufferedImage[] powerup_prefab = load_pics("res/bird.png", 5);
         powerup_gen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), pickup_prefab, powerup_prefab, 2.0, 0.03, 0.3, 64.0);
         cloud.add_gizmo_circle(Color.GREEN, (int) cloud.x_mid_offset, (int) cloud.y_mid_offset, 64);
-        // powerup_gen.spawn(8);
-        powerup_gen.pickup();
-        // powerup_gen.pickup();
-        // powerup_gen.pickup();
-        // powerup_gen.pickup();
-        // powerup_gen.pickup();
-        // powerup_gen.pickup();
-        // powerup_gen.pickup();
-        // powerup_gen.pickup();
 
         BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
         enemy_gen = new EnemyGen(this, actors.get(2), enemy_prefab, 2.0, 0.05);
-        enemy_gen.spawn(0);
 
         BufferedImage[] fog_prefab = load_pics("res/fog.png", 1);
         fog_gen = new FogGen(this, actors.get(3), fog_prefab, 0.5, 1.2);
@@ -93,6 +90,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     private void reset()
     {
+        if (score > score_best)
+        {
+            score_best = score;
+        }
+
         actors.clear();
         init();
     }
@@ -240,10 +242,52 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             g.setColor(Color.red);
             g.drawString(String.format("%.1f fps", fps), 10, 20);
         }
+        
+        g.setColor(Color.white);
+        g.drawString(Integer.toString((int) (score * 1e-1) * 10), this.getSize().width / 2, this.getSize().height - 30);
+        
+        g.setColor(Color.orange);
+        g.drawString("Best: " + Integer.toString((int) (score_best * 1e-1) * 10), this.getSize().width / 2, this.getSize().height - 10);
+    }
+
+    public void spawn()
+    {
+        ThreadLocalRandom t = ThreadLocalRandom.current();
+        
+        double powerup_chance = 0.25;
+        double enemy_chance = 0.5;
+
+        if (score < 1000.0)
+        {
+            enemy_gen.speed = 0.075;
+        }
+        else if (score < 3000.0)
+        {
+            powerup_chance = 0.5;
+            enemy_chance = 0.35;
+            enemy_gen.speed = 0.1;
+        }
+        else if (score < 4000.0)
+        {
+            enemy_chance = 0.3;
+            enemy_gen.speed = 0.15;
+        }
+
+        if (t.nextDouble(0.0, 1.0) <= powerup_chance)
+        {
+            powerup_gen.spawn(1);
+        }
+
+        if (t.nextDouble(0.0, 1.0) <= enemy_chance)
+        {
+            enemy_gen.spawn(1);
+        }
     }
 
     public void fixed_update()
     {
+        spawn();
+
         powerup_gen.clean();
         enemy_gen.reposition();
         fog_gen.redirect();
@@ -262,6 +306,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             last = System.nanoTime();
             fixed_update_counter += deltaTime;
             fps = 1e3 / deltaTime;
+
+            // Add 25 per second
+            score += deltaTime * 0.025;
 
             check_keys();
             move_objects();
