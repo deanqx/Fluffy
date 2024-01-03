@@ -79,7 +79,7 @@ public class Sprite extends Rectangle2D.Double
 
     public void draw_objects(Graphics g)
     {
-        if (!visible)
+        if (!visible || to_remove)
             return;
 
         int _x;

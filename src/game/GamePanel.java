@@ -44,7 +44,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     public GamePanel()
     {
-        this.setPreferredSize(new Dimension(1000, 600));
+        this.setPreferredSize(new Dimension(1280, 720));
         this.setBackground(new Color(89, 108, 171, 255));
         frame = new JFrame("Fluffy");
         frame.setLocation(100, 100);
@@ -182,11 +182,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         {
             for (Sprite enemy : actors.get(2))
             {
-                if (powerup.distance(enemy) <= 0.0)
+                if (powerup.visible && powerup.distance(enemy) <= 0.0)
                 {
-                    powerup.to_remove = true;
+                    powerup.visible = false;
                     enemy.to_remove = true;
-                    break;
+
+                    break; 
                 }
             }
         }

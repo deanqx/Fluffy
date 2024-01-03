@@ -63,18 +63,27 @@ public class PowerupGen
 
     public void pickup()
     {
-        if (powerups.size() == 8)
+        for (Sprite powerup : powerups)
         {
-            panel.score += 500;
-            return;
+            if (!powerup.visible)
+            {
+                powerup.visible = true;
+                return;
+            }
         }
 
-        Sprite powerup = new Sprite(panel, powerup_prefab, 0.0, 0.0, scale, null, 200, rotation_speed);
+        if (powerups.size() == 8)
+        {
+            panel.score += 200;
+            return;
+        }
 
         if (powerups.size() == 0)
         {
             rotation = 0.0;
         }
+
+        Sprite powerup = new Sprite(panel, powerup_prefab, 0.0, 0.0, scale, null, 200, rotation_speed);
 
         powerup.x = rotation_radius * Math.cos(2.0 * Math.PI * spawn_rotations[powerups.size()]);
         powerup.y = rotation_radius * Math.sin(2.0 * Math.PI * spawn_rotations[powerups.size()]);
