@@ -10,14 +10,13 @@ import structs.Bounds;
 
 public class Sprite extends Rectangle2D.Double
 {
-    protected final double scale;
     protected double speed;
     protected double x_mid_offset;
     protected double y_mid_offset;
     protected double x_velocity;
     protected double y_velocity;
-    protected double width_scaled;
-    protected double height_scaled;
+    public double width_scaled;
+    public double height_scaled;
     protected Bounds bounds;
     protected double radius;
     public boolean visible = true;
@@ -38,20 +37,19 @@ public class Sprite extends Rectangle2D.Double
 
     public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, Bounds b, double delay, double speed)
     {
+        panel = p;
         this.speed = speed;
         pics = imgs;
         this.x = x;
         this.y = y;
-        this.scale = scale;
         this.delay = delay;
         width = pics[0].getWidth();
         height = pics[0].getHeight();
-        width_scaled = width * scale;
-        height_scaled = height * scale;
+        width_scaled = width * scale * panel.global_scale;
+        height_scaled = height * scale * panel.global_scale;
         x_mid_offset = width_scaled / 2.0f;
         y_mid_offset = height_scaled / 2.0f;
         radius = Math.max(width_scaled, height_scaled) / 2.0f;
-        panel = p;
 
         if (b == null)
             bounds = null;

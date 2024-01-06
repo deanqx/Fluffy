@@ -3,8 +3,13 @@ package game;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +25,9 @@ import structs.Bounds;
 public class GamePanel extends JPanel implements Runnable, KeyListener
 {
     JFrame frame;
+    double global_scale = 1.0;
+    int w = 1280;
+    int h = 720;
 
     double fps = 0.0;
     double deltaTime;
@@ -44,23 +52,66 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     public GamePanel()
     {
-        this.setPreferredSize(new Dimension(1280, 720));
+        JPanel panel = this;
+        this.setPreferredSize(new Dimension(w, h));
         this.setBackground(new Color(89, 108, 171, 255));
-        frame = new JFrame("Fluffy");
+
+        frame = new JFrame("Fluffy")
+        {
+            {
+                addWindowStateListener(new WindowStateListener()
+                        {
+                            public void windowStateChanged(final WindowEvent e)
+                            {
+                                if (e.getNewState() == MAXIMIZED_BOTH)
+                                {
+                                    setExtendedState(NORMAL);
+                                }
+                            }
+                        });
+            }
+        };
         frame.setLocation(100, 100);
-        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(this);
         frame.addKeyListener(this);
         frame.pack();
         frame.setVisible(true);
 
+        this.addComponentListener(new ComponentAdapter()
+        {
+            @Override
+            public void componentResized(ComponentEvent e)
+            {
+                System.out.println(frame.getSize().width / 16 * 9 + "==" + frame.getSize().height);
+                if (frame.getSize().width / 16 * 9 == frame.getSize().height)
+                {
+                    System.out.println("Quit");
+                    return;
+                }
+
+                System.out.println("Set");
+                if (frame.getSize().width / 16 * 9 < frame.getSize().height)
+                {
+                    frame.setSize(frame.getSize().height * 16 / 9, frame.getSize().height);
+                }
+                else
+                {
+                    System.out.println("width before: " + frame.getSize().width);
+                    System.out.println("change height: " + frame.getSize().width * 9 / 16);
+                    frame.setSize(frame.getSize().width, frame.getSize().width * 9 / 16);
+                }
+
+                System.out.println(frame.getSize().width + " : " + frame.getSize().height + "\t" + ((double) frame.getSize().width / (double)frame.getSize().height)); 
+            }
+        });
+        frame.setSize(1280, 710);
         init();
 
         Thread t = new Thread(this);
         t.start();
     }
-
+    
     private void init()
     {
         score = 0;
