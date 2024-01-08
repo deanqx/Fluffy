@@ -1,9 +1,9 @@
 package game;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -17,6 +17,7 @@ import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -26,8 +27,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 {
     JFrame frame;
     double global_scale = 1.0;
-    int w = 1280;
-    int h = 720;
 
     double fps = 0.0;
     double deltaTime;
@@ -38,6 +37,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     double score_best;
 
     Sprite cloud;
+    Bounds world_border;
     // 0: pickups 1: powerups 2: enemys 3: fogs
     Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
     PowerupGen powerup_gen;
@@ -53,59 +53,55 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     public GamePanel()
     {
         JPanel panel = this;
-        this.setPreferredSize(new Dimension(w, h));
+        this.setPreferredSize(new Dimension(1280, 720));
+        this.setBounds(0, 0, 1280, 720);
         this.setBackground(new Color(89, 108, 171, 255));
 
-        frame = new JFrame("Fluffy")
-        {
-            {
-                addWindowStateListener(new WindowStateListener()
-                        {
-                            public void windowStateChanged(final WindowEvent e)
-                            {
-                                if (e.getNewState() == MAXIMIZED_BOTH)
-                                {
-                                    setExtendedState(NORMAL);
-                                }
-                            }
-                        });
-            }
-        };
+        frame = new JFrame("Fluffy");
         frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(this);
         frame.addKeyListener(this);
+
+        JPanel content_panel = new JPanel();
+        content_panel.setBackground(Color.black);
+        content_panel.setBounds(0, 0, 1280, 720);
+        content_panel.add(this);
+
+        frame.setContentPane(content_panel);
         frame.pack();
+        // frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        this.addComponentListener(new ComponentAdapter()
+        content_panel.addComponentListener(new ComponentAdapter()
         {
             @Override
             public void componentResized(ComponentEvent e)
             {
-                System.out.println(frame.getSize().width / 16 * 9 + "==" + frame.getSize().height);
-                if (frame.getSize().width / 16 * 9 == frame.getSize().height)
+                Dimension d = new Dimension(content_panel.getWidth(), content_panel.getWidth() * 9 / 16);
+
+                if (d.height > content_panel.getHeight())
                 {
-                    System.out.println("Quit");
-                    return;
+                    d.height = content_panel.getHeight();
+                    d.width = content_panel.getHeight() * 16 / 9;
                 }
 
-                System.out.println("Set");
-                if (frame.getSize().width / 16 * 9 < frame.getSize().height)
+                global_scale = (double) d.width / 1280.0;
+                world_border = new Bounds(.0, d.height, .0, d.width);
+
+                cloud.rescale();
+                
+                for (Vector<Sprite> group : actors)
                 {
-                    frame.setSize(frame.getSize().height * 16 / 9, frame.getSize().height);
-                }
-                else
-                {
-                    System.out.println("width before: " + frame.getSize().width);
-                    System.out.println("change height: " + frame.getSize().width * 9 / 16);
-                    frame.setSize(frame.getSize().width, frame.getSize().width * 9 / 16);
+                    for (Sprite it : group)
+                    {
+                        it.rescale();
+                    }
                 }
 
-                System.out.println(frame.getSize().width + " : " + frame.getSize().height + "\t" + ((double) frame.getSize().width / (double)frame.getSize().height)); 
+                panel.setPreferredSize(d);
+                frame.revalidate();
             }
         });
-        frame.setSize(1280, 710);
         init();
 
         Thread t = new Thread(this);
@@ -116,10 +112,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         score = 0;
 
-        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 372, 400, 2.0, new Bounds(.0, this.getSize().height, .0, this.getSize().width), 500, 0.3);
-        cloud.x_mid_offset -= 4.0;
-        cloud.y_mid_offset += 6.0;
-        cloud.radius -= 18.0;
+        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 372, 400, 2.0, new Bounds(.0, this.getHeight(), .0, this.getWidth()), 500, 0.3, -9.0, -2.0, 3.0);
 
         actors.add(new Vector<>());
         actors.add(new Vector<>());

@@ -42,7 +42,7 @@ public class PowerupGen
 
         pickup_width_scaled = pickup_prefab[0].getWidth() * scale;
         pickup_height_scaled = pickup_prefab[0].getHeight() * scale;
-        bounds = new Bounds(-pickup_height_scaled, panel.getSize().height + pickup_height_scaled, 0.0, panel.getSize().width);
+        bounds = new Bounds(-pickup_height_scaled, .getSize().height + pickup_height_scaled, 0.0, panel.getSize().width);
     }
 
     public void spawn(int n)

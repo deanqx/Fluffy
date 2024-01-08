@@ -15,12 +15,17 @@ public class Sprite extends Rectangle2D.Double
     protected double y_mid_offset;
     protected double x_velocity;
     protected double y_velocity;
+    public double scale;
     public double width_scaled;
     public double height_scaled;
     protected Bounds bounds;
     protected double radius;
     public boolean visible = true;
     protected boolean to_remove = false;
+
+    protected double custom_radius = 0.0;
+    protected double custom_x_mid_offset = 0.0;
+    protected double custom_y_mid_offset = 0.0;
 
     private GamePanel panel;
     // Time between images
@@ -35,26 +40,43 @@ public class Sprite extends Rectangle2D.Double
     private Vector<Integer> added_gizmos_y = new Vector<>();
     private Vector<Integer> added_gizmos_r = new Vector<>();
 
+    public void rescale()
+    {
+        width_scaled = width * scale * panel.global_scale;
+        height_scaled = height * scale * panel.global_scale;
+        x_mid_offset = width_scaled / 2.0 + custom_x_mid_offset * scale * panel.global_scale;
+        y_mid_offset = height_scaled / 2.0 + custom_y_mid_offset * scale * panel.global_scale;
+        radius = Math.max(width_scaled, height_scaled) / 2.0 + custom_radius * scale * panel.global_scale; 
+    }
+
     public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, Bounds b, double delay, double speed)
     {
         panel = p;
         this.speed = speed;
+        this.scale = scale;
         pics = imgs;
         this.x = x;
         this.y = y;
         this.delay = delay;
         width = pics[0].getWidth();
         height = pics[0].getHeight();
-        width_scaled = width * scale * panel.global_scale;
-        height_scaled = height * scale * panel.global_scale;
-        x_mid_offset = width_scaled / 2.0f;
-        y_mid_offset = height_scaled / 2.0f;
-        radius = Math.max(width_scaled, height_scaled) / 2.0f;
+
+        rescale();
 
         if (b == null)
             bounds = null;
         else
             bounds = b.clone();
+    }
+
+    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, Bounds b, double delay, double speed, double custom_radius, double custom_x_mid_offset, double custom_y_mid_offset)
+    {
+        this(p, imgs, x, y, scale, b, delay, speed);
+
+        this.custom_radius = custom_radius;
+        this.custom_x_mid_offset = custom_x_mid_offset;
+        this.custom_y_mid_offset = custom_y_mid_offset;
+        rescale();
     }
 
     public double distance(Sprite to)
@@ -112,6 +134,9 @@ public class Sprite extends Rectangle2D.Double
         {
             draw_circle_by_center(g, added_gizmos_c.get(i), (int) x + added_gizmos_x.get(i), (int) y + added_gizmos_y.get(i), added_gizmos_r.get(i));
         }
+
+        g.setColor(Color.orange);
+        g.drawRect((int) bounds.left, (int) bounds.top, (int) (bounds.right - bounds.left), (int) (bounds.bottom - bounds.top));
     }
 
     public void check_bounds()
