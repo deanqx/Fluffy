@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
-import structs.Bounds;
-
 public class PowerupGen
 {
     private GamePanel panel;
@@ -14,7 +12,6 @@ public class PowerupGen
     private Vector<Sprite> powerups;
     private BufferedImage[] pickup_prefab;
     private BufferedImage[] powerup_prefab;
-    private Bounds bounds;
     private final double falling_speed;
     private final double rotation_speed;
     private final double rotation_radius;
@@ -42,7 +39,6 @@ public class PowerupGen
 
         pickup_width_scaled = pickup_prefab[0].getWidth() * scale;
         pickup_height_scaled = pickup_prefab[0].getHeight() * scale;
-        bounds = new Bounds(-pickup_height_scaled, .getSize().height + pickup_height_scaled, 0.0, panel.getSize().width);
     }
 
     public void spawn(int n)
@@ -51,10 +47,10 @@ public class PowerupGen
 
         for (int i = 0; i < n; i++)
         {
-            double x = t.nextDouble(1.0, bounds.right - pickup_width_scaled - 1.0);
-            double y = bounds.top;
+            double x = t.nextDouble(1.0, panel.width - pickup_width_scaled - 1.0);
+            double y = pickup_height_scaled * -scale;
 
-            Sprite new_pickup = new Sprite(panel, pickup_prefab, x, y, scale, bounds, 0, falling_speed);
+            Sprite new_pickup = new Sprite(panel, pickup_prefab, x, y, scale, 0, falling_speed);
             new_pickup.y_velocity = falling_speed;
 
             pickups.add(new_pickup);
@@ -83,7 +79,7 @@ public class PowerupGen
             rotation = 0.0;
         }
 
-        Sprite powerup = new Sprite(panel, powerup_prefab, 0.0, 0.0, scale, null, 200, rotation_speed);
+        Sprite powerup = new Sprite(panel, powerup_prefab, 0.0, 0.0, scale, 200, rotation_speed);
 
         powerup.x = rotation_radius * Math.cos(2.0 * Math.PI * spawn_rotations[powerups.size()]);
         powerup.y = rotation_radius * Math.sin(2.0 * Math.PI * spawn_rotations[powerups.size()]);
@@ -124,7 +120,7 @@ public class PowerupGen
     {
         for (Sprite pickup : pickups)
         {
-            if (pickup.bounds.hit)
+            if (pickup.is_outside())
             {
                 pickup.to_remove = true;
             }
