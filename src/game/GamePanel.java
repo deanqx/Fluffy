@@ -88,7 +88,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         });
         init();
 
-        global_scale = 1.5;
+        global_scale = 1.0;
         panel.setPreferredSize(new Dimension((int) (global_scale * width), (int) (global_scale * height)));
         frame.setSize(new Dimension((int) (global_scale * width), (int) (global_scale * height)));
         frame.revalidate();
@@ -101,7 +101,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         score = 0;
 
-        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 375, 400, 2.0, 500, 0.3, -9.0, -2.0, 3.0);
+        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 375, 400, 2.0, 500, 0.3, 0.625, 0.92, 1.1875);
 
         actors.add(new Vector<>());
         actors.add(new Vector<>());

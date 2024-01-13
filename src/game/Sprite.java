@@ -20,9 +20,9 @@ public class Sprite extends Rectangle2D.Double
     boolean visible = true;
     boolean to_remove = false;
 
-    double custom_radius = 0.0;
-    double custom_x_mid_offset = 0.0;
-    double custom_y_mid_offset = 0.0;
+    double custom_radius_factor = 1.0;
+    double custom_x_mid_factor = 1.0;
+    double custom_y_mid_factor = 1.0;
 
     private GamePanel panel;
     // Time between images
@@ -41,9 +41,9 @@ public class Sprite extends Rectangle2D.Double
     {
         width_scaled = width * scale;
         height_scaled = height * scale;
-        x_mid_offset = width_scaled / 2.0 + custom_x_mid_offset * scale;
-        y_mid_offset = height_scaled / 2.0 + custom_y_mid_offset * scale;
-        radius = Math.max(width_scaled, height_scaled) / 2.0 + custom_radius * scale; 
+        x_mid_offset = width_scaled / 2.0 * custom_x_mid_factor;
+        y_mid_offset = height_scaled / 2.0 * custom_y_mid_factor;
+        radius = Math.max(width_scaled, height_scaled) / 2.0 * custom_radius_factor; 
     }
 
     public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed)
@@ -61,13 +61,13 @@ public class Sprite extends Rectangle2D.Double
         rescale();
     }
 
-    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed, double custom_radius, double custom_x_mid_offset, double custom_y_mid_offset)
+    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed, double custom_radius_factor, double custom_x_mid_factor, double custom_y_mid_factor)
     {
         this(p, imgs, x, y, scale, delay, speed);
 
-        this.custom_radius = custom_radius;
-        this.custom_x_mid_offset = custom_x_mid_offset;
-        this.custom_y_mid_offset = custom_y_mid_offset;
+        this.custom_radius_factor = custom_radius_factor;
+        this.custom_x_mid_factor = custom_x_mid_factor;
+        this.custom_y_mid_factor = custom_y_mid_factor;
         rescale();
     }
 
@@ -115,13 +115,13 @@ public class Sprite extends Rectangle2D.Double
         else
             _x = (int) (x - width_scaled);
 
-        g.drawImage(pics[current_pic], _x, (int) y, (int) (width_scaled * panel.global_scale), (int) (height_scaled * panel.global_scale), null);
+        g.drawImage(pics[current_pic], _x - (int) (width_scaled * (panel.global_scale - 1.0)), (int) y - (int) (height_scaled * (panel.global_scale - 1.0)), (int) (width_scaled * panel.global_scale), (int) (height_scaled * panel.global_scale), null);
     }
 
     void draw_circle_by_center(Graphics g, Color c, int x_center, int y_center, int r)
     {
         g.setColor(c);
-        g.drawOval(x_center - r, y_center - r, r * 2, r * 2);
+        g.drawOval(x_center - r - (int) (width_scaled * (panel.global_scale - 1.0)), y_center - r - (int) (height_scaled * (panel.global_scale - 1.0)), (int) (r * 2.0 * panel.global_scale), (int) (r * 2.0 * panel.global_scale));
     }
 
     public void add_gizmo_circle(Color c, int x_center, int y_center, int r)
@@ -165,8 +165,8 @@ public class Sprite extends Rectangle2D.Double
 
     public void move()
     {
-        double x_moved = x_velocity * panel.deltaTime * panel.global_scale;
-        double y_moved = y_velocity * panel.deltaTime * panel.global_scale;
+        double x_moved = x_velocity * panel.deltaTime;
+        double y_moved = y_velocity * panel.deltaTime;
 
         x += x_moved;
         y += y_moved;
