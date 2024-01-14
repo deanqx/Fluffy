@@ -20,9 +20,9 @@ public class Sprite extends Rectangle2D.Double
     boolean visible = true;
     boolean to_remove = false;
 
-    double custom_radius_factor = 1.0;
-    double custom_x_mid_factor = 1.0;
-    double custom_y_mid_factor = 1.0;
+    double custom_radius_factor;
+    double custom_x_mid_factor;
+    double custom_y_mid_factor;
 
     private GamePanel panel;
     // Time between images
@@ -32,10 +32,10 @@ public class Sprite extends Rectangle2D.Double
     private int current_pic = 0;
     private Vector<Sprite> childs = new Vector<>();
 
-    private Vector<Color> added_gizmos_c = new Vector<>();
-    private Vector<Integer> added_gizmos_x = new Vector<>();
-    private Vector<Integer> added_gizmos_y = new Vector<>();
-    private Vector<Integer> added_gizmos_r = new Vector<>();
+    private Vector<Color> gizmos_c = new Vector<>();
+    private Vector<java.lang.Double> gizmos_x = new Vector<>();
+    private Vector<java.lang.Double> gizmos_y = new Vector<>();
+    private Vector<java.lang.Double> gizmos_r = new Vector<>();
 
     public void rescale()
     {
@@ -48,6 +48,11 @@ public class Sprite extends Rectangle2D.Double
 
     public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed)
     {
+        this(p, imgs, x, y, scale, delay, speed, 1.0, 1.0, 1.0);
+    }
+
+    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed, double custom_radius_factor, double custom_x_mid_factor, double custom_y_mid_factor)
+    {
         panel = p;
         this.speed = speed;
         this.scale = scale;
@@ -57,18 +62,12 @@ public class Sprite extends Rectangle2D.Double
         this.delay = delay;
         width = pics[0].getWidth();
         height = pics[0].getHeight();
-
-        rescale();
-    }
-
-    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed, double custom_radius_factor, double custom_x_mid_factor, double custom_y_mid_factor)
-    {
-        this(p, imgs, x, y, scale, delay, speed);
-
         this.custom_radius_factor = custom_radius_factor;
         this.custom_x_mid_factor = custom_x_mid_factor;
         this.custom_y_mid_factor = custom_y_mid_factor;
+
         rescale();
+        add_gizmo_circle(Color.MAGENTA, (int) x_mid_offset, (int) y_mid_offset, (int) radius);
     }
 
     public double distance(Sprite to)
@@ -108,37 +107,35 @@ public class Sprite extends Rectangle2D.Double
         if (!visible || to_remove)
             return;
 
-        int _x;
+        double _x;
 
         if (width_scaled > 0.0)
-            _x = (int) x;
+            _x = x;
         else
-            _x = (int) (x - width_scaled);
+            _x = x - width_scaled;
 
-        g.drawImage(pics[current_pic], _x - (int) (width_scaled * (panel.global_scale - 1.0)), (int) y - (int) (height_scaled * (panel.global_scale - 1.0)), (int) (width_scaled * panel.global_scale), (int) (height_scaled * panel.global_scale), null);
+        g.drawImage(pics[current_pic], (int) (_x * panel.global_scale), (int) (y * panel.global_scale), (int) (width_scaled * panel.global_scale), (int) (height_scaled * panel.global_scale), null);
     }
 
-    void draw_circle_by_center(Graphics g, Color c, int x_center, int y_center, int r)
+    void draw_circle_by_center(Graphics g, Color c, double x_center, double y_center, double r)
     {
         g.setColor(c);
-        g.drawOval(x_center - r - (int) (width_scaled * (panel.global_scale - 1.0)), y_center - r - (int) (height_scaled * (panel.global_scale - 1.0)), (int) (r * 2.0 * panel.global_scale), (int) (r * 2.0 * panel.global_scale));
+        g.drawOval((int) ((x_center - r) * panel.global_scale), (int) ((y_center - r) * panel.global_scale), (int) (r * 2.0 * panel.global_scale), (int) (r * 2.0 * panel.global_scale));
     }
 
-    public void add_gizmo_circle(Color c, int x_center, int y_center, int r)
+    public void add_gizmo_circle(Color c, double x_center, double y_center, double r)
     {
-        added_gizmos_c.add(c);
-        added_gizmos_x.add(x_center);
-        added_gizmos_y.add(y_center);
-        added_gizmos_r.add(r);
+        gizmos_c.add(c);
+        gizmos_x.add(x_center);
+        gizmos_y.add(y_center);
+        gizmos_r.add(r);
     }
 
     public void draw_gizmos(Graphics g)
     {
-        draw_circle_by_center(g, Color.MAGENTA, (int) (x + x_mid_offset), (int) (y + y_mid_offset), (int) radius);
-
-        for (int i = 0; i < added_gizmos_x.size(); i++)
+        for (int i = 0; i < gizmos_x.size(); i++)
         {
-            draw_circle_by_center(g, added_gizmos_c.get(i), (int) x + added_gizmos_x.get(i), (int) y + added_gizmos_y.get(i), added_gizmos_r.get(i));
+            draw_circle_by_center(g, gizmos_c.get(i), x + gizmos_x.get(i), y + gizmos_y.get(i), gizmos_r.get(i));
         }
     }
 

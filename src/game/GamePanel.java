@@ -8,6 +8,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -52,19 +54,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         this.setPreferredSize(new Dimension((int) width, (int) height));
         this.setBackground(new Color(89, 108, 171, 255));
 
-        frame = new JFrame("Fluffy");
-        frame.setLocation(100, 100);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.addKeyListener(this);
-
         JPanel content_panel = new JPanel();
         content_panel.setBackground(Color.black);
         content_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         content_panel.add(this);
 
+        frame = new JFrame("Fluffy");
+        frame.setLocation(100, 100);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addKeyListener(this);
         frame.setContentPane(content_panel);
         frame.pack();
-        // frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
         content_panel.addComponentListener(new ComponentAdapter()
@@ -72,6 +72,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             @Override
             public void componentResized(ComponentEvent e)
             {
+                System.out.println("Here");
                 Dimension d = new Dimension(content_panel.getWidth(), content_panel.getWidth() * 9 / 16);
 
                 if (d.height > content_panel.getHeight())
@@ -83,13 +84,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
                 global_scale = (double) d.width / width;
 
                 panel.setPreferredSize(d);
+                content_panel.revalidate();
                 frame.revalidate();
             }
         });
         init();
-
-        global_scale = 1.0;
-        panel.setPreferredSize(new Dimension((int) (global_scale * width), (int) (global_scale * height)));
 
         Thread t = new Thread(this);
         t.start();
@@ -109,7 +108,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         BufferedImage[] pickup_prefab = load_pics("res/bird_pickup.png", 1);
         BufferedImage[] powerup_prefab = load_pics("res/bird.png", 5);
         powerup_gen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), pickup_prefab, powerup_prefab, 2.0, 0.03, 0.3, 64.0);
-        cloud.add_gizmo_circle(Color.GREEN, (int) cloud.x_mid_offset, (int) cloud.y_mid_offset, 64);
+        cloud.add_gizmo_circle(Color.GREEN, cloud.x_mid_offset, cloud.y_mid_offset, 64.0);
 
         BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
         enemy_gen = new EnemyGen(this, actors.get(2), enemy_prefab, 2.0, 0.05);
