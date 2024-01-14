@@ -2,6 +2,7 @@ package game;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -49,7 +50,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     {
         JPanel panel = this;
         this.setPreferredSize(new Dimension((int) width, (int) height));
-        this.setBounds(0, 0, (int) width, (int) height);
         this.setBackground(new Color(89, 108, 171, 255));
 
         frame = new JFrame("Fluffy");
@@ -59,7 +59,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         JPanel content_panel = new JPanel();
         content_panel.setBackground(Color.black);
-        content_panel.setBounds(0, 0, (int) width, (int) height);
+        content_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         content_panel.add(this);
 
         frame.setContentPane(content_panel);
@@ -90,8 +90,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
         global_scale = 1.0;
         panel.setPreferredSize(new Dimension((int) (global_scale * width), (int) (global_scale * height)));
-        frame.setSize(new Dimension((int) (global_scale * width), (int) (global_scale * height)));
-        frame.revalidate();
 
         Thread t = new Thread(this);
         t.start();
@@ -311,7 +309,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         g.drawString(Integer.toString((int) (score * 1e-1) * 10), this.getWidth() / 3, this.getHeight() - 30);
         
         g.setColor(Color.orange);
-        g.drawString("Best: " + Integer.toString((int) (score_best * 1e-1) * 10), this.getWidth() / 2, this.getHeight() - 10);
+        g.drawString("Best: " + Integer.toString((int) (score_best * 1e-1) * 10), this.getWidth() / 3, this.getHeight() - 10);
     }
 
     public void spawn()
