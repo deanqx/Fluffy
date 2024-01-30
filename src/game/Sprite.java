@@ -9,65 +9,28 @@ import java.util.Vector;
 public class Sprite extends Rectangle2D.Double
 {
     double speed;
-    double x_mid_offset;
-    double y_mid_offset;
     double x_velocity;
     double y_velocity;
-    double scale;
-    double width_scaled;
-    double height_scaled;
-    double radius;
-    boolean visible = true;
     boolean to_remove = false;
 
-    double custom_radius_factor;
-    double custom_x_mid_factor;
-    double custom_y_mid_factor;
-
     private GamePanel panel;
-    // Time between images
     private double delay;
     private double animation = 0.0f;
     private BufferedImage[] pics;
     private int current_pic = 0;
-    private Vector<Sprite> childs = new Vector<>();
-
-    private Vector<Color> gizmos_c = new Vector<>();
-    private Vector<java.lang.Double> gizmos_x = new Vector<>();
-    private Vector<java.lang.Double> gizmos_y = new Vector<>();
-    private Vector<java.lang.Double> gizmos_r = new Vector<>();
-
-    public void rescale()
-    {
-        width_scaled = width * scale;
-        height_scaled = height * scale;
-        x_mid_offset = width_scaled / 2.0 * custom_x_mid_factor;
-        y_mid_offset = height_scaled / 2.0 * custom_y_mid_factor;
-        radius = Math.max(width_scaled, height_scaled) / 2.0 * custom_radius_factor; 
-    }
 
     public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed)
     {
-        this(p, imgs, x, y, scale, delay, speed, 1.0, 1.0, 1.0);
-    }
-
-    public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double scale, double delay, double speed, double custom_radius_factor, double custom_x_mid_factor, double custom_y_mid_factor)
-    {
         panel = p;
         this.speed = speed;
-        this.scale = scale;
         pics = imgs;
         this.x = x;
         this.y = y;
         this.delay = delay;
         width = pics[0].getWidth();
         height = pics[0].getHeight();
-        this.custom_radius_factor = custom_radius_factor;
-        this.custom_x_mid_factor = custom_x_mid_factor;
-        this.custom_y_mid_factor = custom_y_mid_factor;
-
-        rescale();
-        add_gizmo_circle(Color.MAGENTA, (int) x_mid_offset, (int) y_mid_offset, (int) radius);
+        x_mid = width / 2.0;
+        y_mid = height / 2.0;
     }
 
     public double distance(Sprite to)
