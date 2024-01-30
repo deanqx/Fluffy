@@ -8,8 +8,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +70,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             @Override
             public void componentResized(ComponentEvent e)
             {
-                System.out.println("Here");
                 Dimension d = new Dimension(content_panel.getWidth(), content_panel.getWidth() * 9 / 16);
 
                 if (d.height > content_panel.getHeight())
