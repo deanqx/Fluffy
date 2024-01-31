@@ -26,6 +26,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     double fps = 0.0;
     double deltaTime;
+    int width = 1280;
+    int height = 720;
 
     Sprite cloud;
     Vector<Sprite> enemys = new Vector<Sprite>();
@@ -40,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     public GamePanel()
     {
-        this.setPreferredSize(new Dimension(1280, 720));
+        this.setPreferredSize(new Dimension(width, height));
         this.setBackground(new Color(89, 108, 171, 255));
 
         frame = new JFrame("Fluffy");
@@ -260,5 +262,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     public void keyReleased(KeyEvent e)
     {
         update_keys(e, false);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e)
+    {
     }
 }
