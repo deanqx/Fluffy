@@ -1,5 +1,5 @@
 package game;
-
+   
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -43,6 +43,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         frame = new JFrame("Fluffy");
         frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
         frame.addKeyListener(this);
         frame.add(this);
         frame.pack();

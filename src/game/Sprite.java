@@ -38,7 +38,7 @@ public class Sprite extends Rectangle2D.Double
         double a = (to.x + to.x_mid) - (x + x_mid);
         double b = (to.y + to.y_mid) - (y + y_mid);
 
-        return Math.sqrt(a * a + b * b) - height - to.height;
+        return Math.sqrt(a * a + b * b) - y_mid - to.y_mid;
     }
 
     public boolean is_outside()
