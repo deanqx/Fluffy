@@ -2,14 +2,9 @@ package game;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +21,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     double fps = 0.0;
     double deltaTime;
-    int width = 1280;
-    int height = 720;
+    int width = 720;
+    int height = 500;
 
     Sprite cloud;
     Vector<Sprite> enemys = new Vector<Sprite>();
@@ -61,10 +56,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
     
     private void init()
     {
-        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 375, 400, 2.0, 500, 0.3, 0.625, 0.92, 1.1875);
+        cloud = new Sprite(this, load_pics("res/fluffy.png", 4), 375.0, 400.0, 500, 0.3);
 
         BufferedImage[] enemy_prefab = load_pics("res/plane.png", 4);
-        enemy_gen = new EnemyGen(this, enemys, enemy_prefab, 2.0, 0.05);
+        enemy_gen = new EnemyGen(this, enemy_prefab, 0.05);
+        enemy_gen.spawn(1);
     }
 
     private void reset()
@@ -144,14 +140,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             cloud.y = 0.0;
         }
 
-        if (cloud.x + cloud.width_scaled > getWidth())
+        if (cloud.x + cloud.width > getWidth())
         {
-            cloud.x = getWidth() - cloud.width_scaled;
+            cloud.x = getWidth() - cloud.width;
         }
 
-        if (cloud.y + cloud.height_scaled > getHeight())
+        if (cloud.y + cloud.height > getHeight())
         {
-            cloud.y = getHeight() - cloud.height_scaled;
+            cloud.y = getHeight() - cloud.height;
         }
     }
     private void check_kollision()
