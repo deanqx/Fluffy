@@ -6,18 +6,18 @@ import java.awt.image.BufferedImage;
 
 public class Sprite extends Rectangle2D.Double
 {
-    double speed;
-    double x_velocity;
-    double y_velocity;
-    double x_mid;
-    double y_mid;
+    public double speed;
+    public double x_velocity;
+    public double y_velocity;
+    public boolean to_remove = false;
 
-    GamePanel panel;
-    double delay;
-    double animation = 0.0f;
-    BufferedImage[] pics;
-    int current_pic = 0;
-    boolean to_remove = false;
+    private double x_mid;
+    private double y_mid;
+    private GamePanel panel;
+    private double delay;
+    private double animation = 0.0f;
+    private BufferedImage[] pics;
+    private int current_pic = 0;
 
     public Sprite(GamePanel p, BufferedImage[] imgs, double x, double y, double delay, double speed)
     {
@@ -39,20 +39,6 @@ public class Sprite extends Rectangle2D.Double
         double b = (to.y + to.y_mid) - (y + y_mid);
 
         return Math.sqrt(a * a + b * b) - y_mid - to.y_mid;
-    }
-
-    public boolean is_outside()
-    {
-        if (x > panel.width)
-        {
-            return true;
-        }
-        else if (y > panel.height)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     private void compute_animation()

@@ -17,23 +17,21 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener
 {
-    JFrame frame;
+    public double deltaTime;
+    public int width = 720;
+    public int height = 500;
+    public Vector<Sprite> enemys = new Vector<Sprite>();
 
-    double fps = 0.0;
-    double deltaTime;
-    int width = 720;
-    int height = 500;
+    private Sprite cloud;
+    private EnemyGen enemy_gen;
+    private JFrame frame;
+    private double fps = 0.0;
+    private boolean key_up;
+    private boolean key_left;
+    private boolean key_down;
+    private boolean key_right;
 
-    Sprite cloud;
-    Vector<Sprite> enemys = new Vector<Sprite>();
-    EnemyGen enemy_gen;
-    
-    boolean key_up;
-    boolean key_left;
-    boolean key_down;
-    boolean key_right;
-
-    double enemy_chance = 0.5;
+    private double enemy_chance = 0.5;
 
     public GamePanel()
     {
@@ -129,7 +127,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             cloud.x_velocity = 0.0;
     }
 
-    public void check_bounds()
+    private void check_bounds()
     {
         if (cloud.x < 0.0)
         {
@@ -184,7 +182,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         g.drawString(String.format("%.1f fps", fps), 10, 20);
     }
 
-    public void spawn()
+    private void spawn()
     {
         ThreadLocalRandom t = ThreadLocalRandom.current();
         
@@ -208,7 +206,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             check_keys();
             move_objects();
             check_kollision();
-            update();
 
             for (int i = enemys.size() - 1; i >= 0; i--)
             {
@@ -218,6 +215,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
                 }
             }
 
+            update();
             repaint();
 
             try

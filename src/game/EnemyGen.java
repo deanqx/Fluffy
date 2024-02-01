@@ -7,7 +7,7 @@ public class EnemyGen
 {
     private GamePanel panel;
     private BufferedImage[] enemy_prefab;
-    public double speed;
+    private double speed;
      
     public EnemyGen(GamePanel panel, BufferedImage[] enemy_prefab, double speed)
     {
