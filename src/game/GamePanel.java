@@ -360,7 +360,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
         spawn();
 
         powerup_gen.clean();
-        enemy_gen.reposition();
         fog_gen.redirect();
     }
 
@@ -391,6 +390,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
                 fixed_update_counter = 0.0;
                 fixed_update();
             }
+
+            enemy_gen.reposition();
 
             for (Vector<Sprite> it : actors)
             {
