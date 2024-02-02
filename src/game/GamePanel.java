@@ -3,7 +3,10 @@ package game;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -48,6 +51,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 
     public GamePanel()
     {
+        try
+        {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("res/PressStart.ttf")));
+        } catch (IOException|FontFormatException e)
+        {
+        }
+
         JPanel panel = this;
         this.setPreferredSize(new Dimension((int) width, (int) height));
         this.setBackground(new Color(89, 108, 171, 255));
@@ -300,9 +311,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
             g.setColor(Color.red);
             g.drawString(String.format("%.1f fps", fps), 10, 20);
         }
+
+        g.setFont(new Font("Press Start 2P", Font.PLAIN, 24));
         
         g.setColor(Color.white);
-        g.drawString(Integer.toString((int) (score * 1e-1) * 10), this.getWidth() / 3, this.getHeight() - 30);
+        g.drawString(Integer.toString((int) (score * 1e-1) * 10), this.getWidth() / 3, this.getHeight() - 40);
         
         g.setColor(Color.orange);
         g.drawString("Best: " + Integer.toString((int) (score_best * 1e-1) * 10), this.getWidth() / 3, this.getHeight() - 10);
