@@ -12,6 +12,7 @@ Latest release can be found on GitHub under [Releases](https://github.com/deanqx
 
 ## Controls
 
+| Key        | Action                       |
 |------------|------------------------------|
 | `w` or `↑` | move up                      |
 | `a` or `←` | move left                    |
