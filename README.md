@@ -1,8 +1,23 @@
 ![Preview](./preview.png)
 
+TODO write description
+
 # Try it your self
 
-Latest built release can be found in GitHub under [Releases](https://github.com/deanqx/Fluffy/releases).
+Latest release can be found on GitHub under [Releases](https://github.com/deanqx/Fluffy/releases).
+
+1. Download the `.jar` file
+
+2. Run it with Java
+
+## Controls
+
+|------------|------------------------------|
+| `w` or `↑` | move up                      |
+| `a` or `←` | move left                    |
+| `s` or `↓` | move down                    |
+| `d` or `→` | move right                   |
+| `g`        | debug mode, display hitboxes |
 
 # Build
 
@@ -20,3 +35,7 @@ as build system.
 ```
 gradlew.bat build
 ```
+
+# For developers
+
+This project uses the default formatter of `jdtls` language server.
