@@ -3,7 +3,6 @@ package game;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -14,9 +13,9 @@ public class Main {
 
         System.out.println("Working Directory: " + System.getProperty("user.dir"));
 
-        var font_file = new File(Main.class.getClassLoader().getResource("PressStart.ttf").toURI());
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, font_file));
+        ge.registerFont(Font.createFont(Font.TRUETYPE_FONT,
+                Main.class.getClassLoader().getResourceAsStream("PressStart.ttf")));
 
         var prefaps = new Prefaps();
 

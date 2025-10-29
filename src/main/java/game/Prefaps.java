@@ -1,8 +1,8 @@
 package game;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
@@ -15,11 +15,11 @@ public class Prefaps {
     private BufferedImage[] powerup_pickup;
 
     public Prefaps() throws URISyntaxException, IOException {
-        character = load_pics(new File(getClass().getClassLoader().getResource("fluffy.png").toURI()), 4);
-        enemy = load_pics(new File(getClass().getClassLoader().getResource("plane.png").toURI()), 4);
-        fog = load_pics(new File(getClass().getClassLoader().getResource("fog.png").toURI()), 1);
-        powerup = load_pics(new File(getClass().getClassLoader().getResource("bird.png").toURI()), 5);
-        powerup_pickup = load_pics(new File(getClass().getClassLoader().getResource("bird_pickup.png").toURI()), 1);
+        character = load_pics(getClass().getClassLoader().getResourceAsStream("fluffy.png"), 4);
+        enemy = load_pics(getClass().getClassLoader().getResourceAsStream("plane.png"), 4);
+        fog = load_pics(getClass().getClassLoader().getResourceAsStream("fog.png"), 1);
+        powerup = load_pics(getClass().getClassLoader().getResourceAsStream("bird.png"), 5);
+        powerup_pickup = load_pics(getClass().getClassLoader().getResourceAsStream("bird_pickup.png"), 1);
     }
 
     public BufferedImage[] getCharacter() {
@@ -43,11 +43,11 @@ public class Prefaps {
     }
 
     // Bilder müssen horizontal hintereinander in einem Bild sein
-    private BufferedImage[] load_pics(File file, int picCount) throws IOException {
+    private BufferedImage[] load_pics(InputStream input, int picCount) throws IOException {
         BufferedImage[] pics = new BufferedImage[picCount];
         BufferedImage source = null;
 
-        source = ImageIO.read(file);
+        source = ImageIO.read(input);
 
         for (int x = 0; x < picCount; x++) {
             // Bild mit picCount aufteilen

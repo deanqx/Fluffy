@@ -12,6 +12,12 @@ with no programming experience create a simpler version of it.
 The tutorial is currently not public,
 as it was part of a school submission and I don’t hold the rights to distribute it.
 
+**Special features**
+
+- scaleable window
+- birds rotate in circle
+- animated objects
+
 # Try it your self
 
 Latest release can be found on GitHub under [Releases](https://github.com/deanqx/Fluffy/releases).
@@ -30,23 +36,42 @@ Latest release can be found on GitHub under [Releases](https://github.com/deanqx
 | `d` or `→` | move right                   |
 | `g`        | debug mode, display hitboxes |
 
-# Build
+## Run from source
 
-This project uses [Gradle](https://docs.gradle.org/current/userguide/getting_started.html)
-as build system.
-
-## Linux or OSX system
+### Linux or OSX system
 
 ```
-./gradlew build
+./gradlew run
 ```
 
-## Windows PowerShell
+### Windows PowerShell
 
 ```
-gradlew.bat build
+gradlew.bat run
 ```
 
 # For developers
 
+This project uses [Gradle](https://docs.gradle.org/current/userguide/getting_started.html)
+as build system.
+
 This project uses the default formatter of `jdtls` language server.
+
+## Build
+
+Before building a new release the version number has to be updated in the `build.gradle.kts` file.
+
+The [application plugin](https://docs.gradle.org/current/userguide/application_plugin.html)
+is used to build.
+
+### JAR
+
+```
+./gradlew installDist
+```
+
+### Publish ready ZIP
+
+```
+./gradlew distZip
+```
