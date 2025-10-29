@@ -1,6 +1,16 @@
 ![Preview](./preview.png)
 
-TODO write description
+Fluffy is a cloud who doesn’t like airplanes flying through her.
+You can move her out of their way to keep her safe.
+The longer she avoids collision, the more points you earn.
+Birds are Fluffy’s friends. When collected, they circle around her and act as a protective shield.
+
+This game was a school project developed from September 2023 to January 2024.
+I created it in my free time over five months.
+Alongside the game, I also wrote a detailed tutorial designed to help beginners
+with no programming experience create a simpler version of it.
+The tutorial is currently not public,
+as it was part of a school submission and I don’t hold the rights to distribute it.
 
 # Try it your self
 
