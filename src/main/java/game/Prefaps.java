@@ -12,14 +12,14 @@ public class Prefaps {
     private BufferedImage[] enemy;
     private BufferedImage[] fog;
     private BufferedImage[] powerup;
-    private BufferedImage[] powerup_pickup;
+    private BufferedImage[] powerupPickup;
 
     public Prefaps() throws URISyntaxException, IOException {
-        character = load_pics(getClass().getClassLoader().getResourceAsStream("fluffy.png"), 4);
-        enemy = load_pics(getClass().getClassLoader().getResourceAsStream("plane.png"), 4);
-        fog = load_pics(getClass().getClassLoader().getResourceAsStream("fog.png"), 1);
-        powerup = load_pics(getClass().getClassLoader().getResourceAsStream("bird.png"), 5);
-        powerup_pickup = load_pics(getClass().getClassLoader().getResourceAsStream("bird_pickup.png"), 1);
+        character = loadPics(getClass().getClassLoader().getResourceAsStream("fluffy.png"), 4);
+        enemy = loadPics(getClass().getClassLoader().getResourceAsStream("plane.png"), 4);
+        fog = loadPics(getClass().getClassLoader().getResourceAsStream("fog.png"), 1);
+        powerup = loadPics(getClass().getClassLoader().getResourceAsStream("bird.png"), 5);
+        powerupPickup = loadPics(getClass().getClassLoader().getResourceAsStream("bird_pickup.png"), 1);
     }
 
     public BufferedImage[] getCharacter() {
@@ -38,12 +38,12 @@ public class Prefaps {
         return powerup;
     }
 
-    public BufferedImage[] getPowerup_pickup() {
-        return powerup_pickup;
+    public BufferedImage[] getPowerupPickup() {
+        return powerupPickup;
     }
 
     // Bilder müssen horizontal hintereinander in einem Bild sein
-    private BufferedImage[] load_pics(InputStream input, int picCount) throws IOException {
+    private BufferedImage[] loadPics(InputStream input, int picCount) throws IOException {
         BufferedImage[] pics = new BufferedImage[picCount];
         BufferedImage source = null;
 
