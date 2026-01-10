@@ -16,10 +16,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
-    private JFrame frame;
+    private final JFrame frame;
     private float scale = 1.0f;
-    private float width = 1280.0f;
-    private float height = 720.0f;
+    private final float gameWidth = 1280.0f;
+    private final float gameHeight = 720.0f;
 
     private float fps = 0.0f;
     private float deltaTime;
@@ -29,10 +29,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private float score;
     private float scoreBest;
 
-    private Prefaps prefaps;
+    private final Prefab prefabCharacter;
+    private final Prefab prefabEnemy;
+    private final Prefab prefabFog;
+    private final Prefab prefabPowerup;
+    private final Prefab prefabPickup;
+
     private Sprite cloud = null;
     /// 0: pickups 1: powerups 2: enemies 3: fogs TODO remove 2D anonymos array
-    private Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
+    private final Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
     private PowerupGen powerupGen;
     private EnemyGen enemyGen;
     private FogGen fogGen;
@@ -43,11 +48,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private boolean keyDown;
     private boolean keyRight;
 
-    public GamePanel(final Prefaps prefaps) {
-        this.prefaps = prefaps;
+    public GamePanel(final Prefab character, final Prefab enemy, final Prefab fog, final Prefab powerup,
+            final Prefab pickup) {
+        this.prefabCharacter = character;
+        this.prefabEnemy = enemy;
+        this.prefabFog = fog;
+        this.prefabPowerup = powerup;
+        this.prefabPickup = pickup;
 
         final JPanel panel = this;
-        this.setPreferredSize(new Dimension((int) width, (int) height));
+        this.setPreferredSize(new Dimension((int) gameWidth, (int) gameHeight));
         this.setBackground(new Color(89, 108, 171, 255));
 
         final JPanel content_panel = new JPanel();
@@ -73,7 +83,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                     d.width = content_panel.getHeight() * 16 / 9;
                 }
 
-                scale = (float) d.width / width;
+                scale = (float) d.width / gameWidth;
 
                 panel.setPreferredSize(d);
                 content_panel.revalidate();
@@ -89,22 +99,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void init() {
         score = 0;
 
-        cloud = new Sprite(this, prefaps.getCharacter(), 375f, 400f, 2.0f, 500f, 0.3f, 0.625f, 0.92f, 1.1875f);
+        cloud = new Sprite(this, prefabCharacter, 375f, 400f, 2.0f, 500f, 0.3f, 0.625f, 0.92f, 1.1875f);
 
         actors.add(new Vector<>());
         actors.add(new Vector<>());
         actors.add(new Vector<>());
         actors.add(new Vector<>());
 
-        powerupGen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), prefaps.getPowerupPickup(),
-                prefaps.getPowerup(), 2.0f,
-                0.03f, 0.3f, 64.0f);
+        powerupGen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), prefabPickup, prefabPowerup, 2.0f, 0.03f,
+                0.3f, 64.0f);
 
         cloud.addGizmoCircle(Color.GREEN, cloud.xMidOffset, cloud.yMidOffset, 64.0f);
 
-        enemyGen = new EnemyGen(this, actors.get(2), prefaps.getEnemy(), 2.0f, 0.05f);
+        enemyGen = new EnemyGen(this, actors.get(2), prefabEnemy, 2.0f, 0.05f);
 
-        fogGen = new FogGen(this, actors.get(3), prefaps.getFog(), 0.5f, 1.2f);
+        fogGen = new FogGen(this, actors.get(3), prefabFog, 0.5f, 1.2f);
         fogGen.spawn(10, 0.03f);
     }
 
@@ -164,12 +173,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             cloud.y = 0.0f;
         }
 
-        if (cloud.x + cloud.widthScaled > width) {
-            cloud.x = width - cloud.widthScaled;
+        if (cloud.x + cloud.widthScaled > gameWidth) {
+            cloud.x = gameWidth - cloud.widthScaled;
         }
 
-        if (cloud.y + cloud.heightScaled > height) {
-            cloud.y = height - cloud.heightScaled;
+        if (cloud.y + cloud.heightScaled > gameHeight) {
+            cloud.y = gameHeight - cloud.heightScaled;
         }
     }
 
@@ -349,7 +358,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public void keyTyped(final KeyEvent e) {
     }
 
-    public void addScore(float amount) {
+    public void addScore(final float amount) {
         score += amount;
     }
 
@@ -358,7 +367,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     public float getGameHeight() {
-        return height;
+        return gameHeight;
     }
 
     public float getScale() {
@@ -366,6 +375,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     public float getGameWidth() {
-        return width;
+        return gameWidth;
     }
 }

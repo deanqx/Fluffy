@@ -3,7 +3,6 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.util.Vector;
 
 public class Sprite extends Rectangle2D.Float {
@@ -13,25 +12,25 @@ public class Sprite extends Rectangle2D.Float {
     float yMidOffset;
     float xVelocity;
     float yVelocity;
-    private float scale;
     float widthScaled;
     float heightScaled;
-    private float radius;
     float speed;
+    private final float local_scale;
+    private float radius;
 
     boolean visible = true;
     boolean toRemove = false;
 
-    private float customRadiusFactor;
-    private float customXMidFactor;
-    private float customYNidFactor;
+    private final float customRadiusFactor;
+    private final float customXMidFactor;
+    private final float customYNidFactor;
 
     private final GamePanel panel;
+    private final Prefab prefab;
     // Time between images
     private final float delay;
-    private float animation = 0.0f;
-    private final BufferedImage[] pics;
-    private int currentPic = 0;
+    private float current_animation_time = 0.0f;
+    private int currentImageIndex = 0;
     private final Vector<Sprite> childs = new Vector<>();
 
     // TODO move into class
@@ -41,30 +40,30 @@ public class Sprite extends Rectangle2D.Float {
     private final Vector<java.lang.Float> gizmoRotations = new Vector<>();
 
     public void rescale() {
-        widthScaled = width * scale;
-        heightScaled = height * scale;
+        widthScaled = width * local_scale;
+        heightScaled = height * local_scale;
         xMidOffset = widthScaled / 2.0f * customXMidFactor;
         yMidOffset = heightScaled / 2.0f * customYNidFactor;
         radius = Math.max(widthScaled, heightScaled) / 2.0f * customRadiusFactor;
     }
 
-    public Sprite(final GamePanel p, final BufferedImage[] imgs, final float x, final float y, final float scale,
+    public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
             final float delay, final float speed) {
-        this(p, imgs, x, y, scale, delay, speed, 1.0f, 1.0f, 1.0f);
+        this(panel, prefab, x, y, scale, delay, speed, 1.0f, 1.0f, 1.0f);
     }
 
-    public Sprite(final GamePanel p, final BufferedImage[] imgs, final float x, final float y, final float scale,
+    public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
             final float delay, final float speed,
             final float custom_radius_factor, final float custom_x_mid_factor, final float custom_y_mid_factor) {
-        panel = p;
+        this.panel = panel;
         this.speed = speed;
-        this.scale = scale;
-        pics = imgs;
+        this.local_scale = scale;
+        this.prefab = prefab;
         this.x = x;
         this.y = y;
         this.delay = delay;
-        width = pics[0].getWidth();
-        height = pics[0].getHeight();
+        this.width = prefab.getImage(0).getWidth();
+        this.height = prefab.getImage(0).getHeight();
         this.customRadiusFactor = custom_radius_factor;
         this.customXMidFactor = custom_x_mid_factor;
         this.customYNidFactor = custom_y_mid_factor;
@@ -94,25 +93,16 @@ public class Sprite extends Rectangle2D.Float {
     }
 
     private void advanceAnimation() {
-        currentPic++;
-
-        if (currentPic >= pics.length) {
-            currentPic = 0;
-        }
+        currentImageIndex = (currentImageIndex + 1) % prefab.getImageCount();
     }
 
     public void draw(final Graphics g) {
         if (!visible || toRemove)
             return;
 
-        float _x;
+        final float _x = widthScaled > 0.0f ? x : x - widthScaled;
 
-        if (widthScaled > 0.0f)
-            _x = x;
-        else
-            _x = x - widthScaled;
-
-        g.drawImage(pics[currentPic], (int) (_x * panel.getScale()), (int) (y * panel.getScale()),
+        g.drawImage(prefab.getImage(currentImageIndex), (int) (_x * panel.getScale()), (int) (y * panel.getScale()),
                 (int) (widthScaled * panel.getScale()), (int) (heightScaled * panel.getScale()), null);
     }
 
@@ -136,13 +126,15 @@ public class Sprite extends Rectangle2D.Float {
     }
 
     public void update() {
-        if (pics.length > 1) {
-            animation += panel.getDeltaTime();
+        if (prefab.getImageCount() <= 1) {
+            return;
+        }
 
-            if (animation > delay) {
-                animation = 0.0f;
-                advanceAnimation();
-            }
+        current_animation_time += panel.getDeltaTime();
+
+        if (current_animation_time > delay) {
+            current_animation_time = 0.0f;
+            advanceAnimation();
         }
     }
 

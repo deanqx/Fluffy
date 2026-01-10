@@ -1,19 +1,18 @@
 package game;
 
-import java.awt.image.BufferedImage;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EnemyGen {
     private final GamePanel panel;
     private final Vector<Sprite> enemies;
-    private final BufferedImage[] enemyPrefab;
+    private final Prefab enemyPrefab;
     private final float enemyWidthScaled;
     private final float enemyHeightScaled;
     private final float scale;
     private float speed;
 
-    public EnemyGen(final GamePanel panel, final Vector<Sprite> enemies, final BufferedImage[] enemy_prefab,
+    public EnemyGen(final GamePanel panel, final Vector<Sprite> enemies, final Prefab enemy_prefab,
             final float scale, final float speed) {
         this.panel = panel;
         this.enemies = enemies;
@@ -21,8 +20,8 @@ public class EnemyGen {
         this.speed = speed;
         this.enemyPrefab = enemy_prefab;
 
-        enemyWidthScaled = enemy_prefab[0].getWidth() * scale;
-        enemyHeightScaled = enemy_prefab[0].getHeight() * scale;
+        enemyWidthScaled = enemy_prefab.getImage(0).getWidth() * scale;
+        enemyHeightScaled = enemy_prefab.getImage(0).getHeight() * scale;
     }
 
     public void spawn(final int amount) {

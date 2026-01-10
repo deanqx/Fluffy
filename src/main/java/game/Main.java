@@ -17,8 +17,12 @@ public class Main {
         ge.registerFont(Font.createFont(Font.TRUETYPE_FONT,
                 Main.class.getClassLoader().getResourceAsStream("PressStart.ttf")));
 
-        var prefaps = new Prefaps();
+        final var character = new Prefab(Main.class.getClassLoader().getResourceAsStream("fluffy.png"), 4);
+        final var enemy = new Prefab(Main.class.getClassLoader().getResourceAsStream("plane.png"), 4);
+        final var fog = new Prefab(Main.class.getClassLoader().getResourceAsStream("fog.png"), 1);
+        final var powerup = new Prefab(Main.class.getClassLoader().getResourceAsStream("bird.png"), 5);
+        final var pickup = new Prefab(Main.class.getClassLoader().getResourceAsStream("bird_pickup.png"), 1);
 
-        new GamePanel(prefaps);
+        new GamePanel(character, enemy, fog, powerup, pickup);
     }
 }
