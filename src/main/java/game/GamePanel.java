@@ -17,17 +17,17 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
     JFrame frame;
-    double scale = 1.0;
-    double width = 1280.0;
-    double height = 720.0;
+    float scale = 1.0f;
+    float width = 1280.0f;
+    float height = 720.0f;
 
-    double fps = 0.0;
-    double deltaTime;
-    double fixedUpdateCounter;
-    final double fixedUpdateInterval = 1000.0;
+    float fps = 0.0f;
+    float deltaTime;
+    float fixedUpdateCounter;
+    final float fixedUpdateInterval = 1000.0f;
 
-    double score;
-    double scoreBest;
+    float score;
+    float scoreBest;
 
     Prefaps prefaps;
     Sprite cloud = null;
@@ -73,7 +73,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                     d.width = content_panel.getHeight() * 16 / 9;
                 }
 
-                scale = (double) d.width / width;
+                scale = (float) d.width / width;
 
                 panel.setPreferredSize(d);
                 content_panel.revalidate();
@@ -89,7 +89,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void init() {
         score = 0;
 
-        cloud = new Sprite(this, prefaps.getCharacter(), 375, 400, 2.0, 500, 0.3, 0.625, 0.92, 1.1875);
+        cloud = new Sprite(this, prefaps.getCharacter(), 375f, 400f, 2.0f, 500f, 0.3f, 0.625f, 0.92f, 1.1875f);
 
         actors.add(new Vector<>());
         actors.add(new Vector<>());
@@ -97,15 +97,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         actors.add(new Vector<>());
 
         powerupGen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), prefaps.getPowerupPickup(),
-                prefaps.getPowerup(), 2.0,
-                0.03, 0.3, 64.0);
+                prefaps.getPowerup(), 2.0f,
+                0.03f, 0.3f, 64.0f);
 
-        cloud.addGizmoCircle(Color.GREEN, cloud.xMidOffset, cloud.yMidOffset, 64.0);
+        cloud.addGizmoCircle(Color.GREEN, cloud.xMidOffset, cloud.yMidOffset, 64.0f);
 
-        enemyGen = new EnemyGen(this, actors.get(2), prefaps.getEnemy(), 2.0, 0.05);
+        enemyGen = new EnemyGen(this, actors.get(2), prefaps.getEnemy(), 2.0f, 0.05f);
 
-        fogGen = new FogGen(this, actors.get(3), prefaps.getFog(), 0.5, 1.2);
-        fogGen.spawn(10, 0.03);
+        fogGen = new FogGen(this, actors.get(3), prefaps.getFog(), 0.5f, 1.2f);
+        fogGen.spawn(10, 0.03f);
     }
 
     private void reset() {
@@ -150,18 +150,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             cloud.xVelocity = cloud.speed;
 
         if (keyUp == keyDown)
-            cloud.yVelocity = 0.0;
+            cloud.yVelocity = 0.0f;
         if (keyLeft == keyRight)
-            cloud.xVelocity = 0.0;
+            cloud.xVelocity = 0.0f;
     }
 
     public void collisionBounds() {
-        if (cloud.x < 0.0) {
-            cloud.x = 0.0;
+        if (cloud.x < 0.0f) {
+            cloud.x = 0.0f;
         }
 
-        if (cloud.y < 0.0) {
-            cloud.y = 0.0;
+        if (cloud.y < 0.0f) {
+            cloud.y = 0.0f;
         }
 
         if (cloud.x + cloud.widthScaled > width) {
@@ -177,7 +177,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         collisionBounds();
 
         for (Sprite pickup : actors.get(0)) {
-            if (cloud.distance(pickup) <= 0.0) {
+            if (cloud.distance(pickup) <= 0.0f) {
                 pickup.toRemove = true;
                 powerupGen.pickup();
             }
@@ -185,7 +185,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
         for (Sprite powerup : actors.get(1)) {
             for (Sprite enemy : actors.get(2)) {
-                if (powerup.visible && powerup.distance(enemy) <= 0.0) {
+                if (powerup.visible && powerup.distance(enemy) <= 0.0f) {
                     powerup.visible = false;
                     enemy.toRemove = true;
 
@@ -195,7 +195,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         }
 
         for (Sprite enemies : actors.get(2)) {
-            if (cloud.distance(enemies) <= 0.0) {
+            if (cloud.distance(enemies) <= 0.0f) {
                 reset();
                 return;
             }
@@ -248,25 +248,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public void spawn() {
         ThreadLocalRandom t = ThreadLocalRandom.current();
 
-        double powerup_chance = 0.25;
-        double enemy_chance = 0.5;
+        float powerup_chance = 0.25f;
+        float enemy_chance = 0.5f;
 
-        if (score < 1000.0) {
-            enemyGen.speed = 0.075;
-        } else if (score < 3000.0) {
-            powerup_chance = 0.5;
-            enemy_chance = 0.35;
-            enemyGen.speed = 0.1;
-        } else if (score < 4000.0) {
-            enemy_chance = 0.3;
-            enemyGen.speed = 0.15;
+        if (score < 1000.0f) {
+            enemyGen.speed = 0.075f;
+        } else if (score < 3000.0f) {
+            powerup_chance = 0.5f;
+            enemy_chance = 0.35f;
+            enemyGen.speed = 0.1f;
+        } else if (score < 4000.0f) {
+            enemy_chance = 0.3f;
+            enemyGen.speed = 0.15f;
         }
 
-        if (t.nextDouble(0.0, 1.0) <= powerup_chance) {
+        if (t.nextFloat(0.0f, 1.0f) <= powerup_chance) {
             powerupGen.spawn(1);
         }
 
-        if (t.nextDouble(0.0, 1.0) <= enemy_chance) {
+        if (t.nextFloat(0.0f, 1.0f) <= enemy_chance) {
             enemyGen.spawn(1);
         }
     }
@@ -283,15 +283,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         long last = System.nanoTime();
 
         while (frame.isVisible()) {
-            // Um Verschiedene Frame raten auszugleichen kann man mit diesem wert
-            // multiplezieren
-            deltaTime = (double) (System.nanoTime() - last) * 1e-6;
+            // frame time difference converted to one over milli seconds floating point
+            deltaTime = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
             fixedUpdateCounter += deltaTime;
-            fps = 1e3 / deltaTime;
+            fps = 1e3f / deltaTime;
 
             // Add 25 per second
-            score += deltaTime * 0.025;
+            score += deltaTime * 0.025f;
 
             updateVelocity();
             moveObjects();
@@ -299,7 +298,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             update();
 
             if (fixedUpdateCounter >= fixedUpdateInterval) {
-                fixedUpdateCounter = 0.0;
+                fixedUpdateCounter = 0.0f;
                 fixedUpdate();
             }
 

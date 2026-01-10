@@ -8,13 +8,13 @@ public class EnemyGen {
     private GamePanel panel;
     private Vector<Sprite> enemies;
     private BufferedImage[] enemyPrefab;
-    private final double enemyWidthScaled;
-    private final double enemyHeightScaled;
-    private final double scale;
+    private final float enemyWidthScaled;
+    private final float enemyHeightScaled;
+    private final float scale;
 
-    public double speed;
+    public float speed;
 
-    public EnemyGen(GamePanel panel, Vector<Sprite> enemies, BufferedImage[] enemy_prefab, double scale, double speed) {
+    public EnemyGen(GamePanel panel, Vector<Sprite> enemies, BufferedImage[] enemy_prefab, float scale, float speed) {
         this.panel = panel;
         this.enemies = enemies;
         this.scale = scale;
@@ -29,10 +29,10 @@ public class EnemyGen {
         ThreadLocalRandom rng = ThreadLocalRandom.current();
 
         for (int i = 0; i < amount; i++) {
-            double x = rng.nextDouble(1.0, panel.width - enemyWidthScaled - 1.0);
-            double y = enemyHeightScaled * -scale;
+            float x = rng.nextFloat(1.0f, panel.width - enemyWidthScaled - 1.0f);
+            float y = enemyHeightScaled * -scale;
 
-            Sprite new_enemy = new Sprite(panel, enemyPrefab, x, y, scale, 500.0, speed);
+            Sprite new_enemy = new Sprite(panel, enemyPrefab, x, y, scale, 500.0f, speed);
             new_enemy.yVelocity = speed;
 
             enemies.add(new_enemy);
@@ -44,7 +44,7 @@ public class EnemyGen {
 
         for (Sprite enemy : enemies) {
             if (enemy.isOutOfBounds()) {
-                enemy.x = rng.nextDouble(1.0, panel.width - enemyWidthScaled - 1.0);
+                enemy.x = rng.nextFloat(1.0f, panel.width - enemyWidthScaled - 1.0f);
                 enemy.y = enemyHeightScaled * -scale;
                 enemy.speed = speed;
                 enemy.yVelocity = speed;

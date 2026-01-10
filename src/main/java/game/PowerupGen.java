@@ -11,20 +11,20 @@ public class PowerupGen {
     private Vector<Sprite> powerups;
     private BufferedImage[] pickupPrefab;
     private BufferedImage[] powerupPrefab;
-    private final double fallingSpeed;
-    private final double rotationSpeed;
-    private final double rotationRadius;
-    private double rotation = 0.0;
+    private final float fallingSpeed;
+    private final float rotationSpeed;
+    private final float rotationRadius;
+    private float rotation = 0.0f;
 
-    private final double pickupWidthScaled;
-    private final double pickupHeightScaled;
-    private final double scale;
+    private final float pickupWidthScaled;
+    private final float pickupHeightScaled;
+    private final float scale;
 
-    private final double spawnRotations[] = { 0.0, 0.5, 0.75, 0.25, 0.125, 0.375, 0.625, 0.875 };
+    private final float spawnRotations[] = { 0.0f, 0.5f, 0.75f, 0.25f, 0.125f, 0.375f, 0.625f, 0.875f };
 
     public PowerupGen(GamePanel panel, Sprite cloud, Vector<Sprite> pickups, Vector<Sprite> powerups,
-            BufferedImage[] pickup_prefab, BufferedImage[] powerup_prefab, double scale, double falling_speed,
-            double rotation_speed, double rotation_radius) {
+            BufferedImage[] pickup_prefab, BufferedImage[] powerup_prefab, float scale, float falling_speed,
+            float rotation_speed, float rotation_radius) {
         this.panel = panel;
         this.cloud = cloud;
         this.pickups = pickups;
@@ -44,8 +44,8 @@ public class PowerupGen {
         ThreadLocalRandom t = ThreadLocalRandom.current();
 
         for (int i = 0; i < amount; i++) {
-            double x = t.nextDouble(1.0, panel.width - pickupWidthScaled - 1.0);
-            double y = pickupHeightScaled * -scale;
+            float x = t.nextFloat(1.0f, panel.width - pickupWidthScaled - 1.0f);
+            float y = pickupHeightScaled * -scale;
 
             Sprite new_pickup = new Sprite(panel, pickupPrefab, x, y, scale, 0, fallingSpeed);
             new_pickup.yVelocity = fallingSpeed;
@@ -63,18 +63,18 @@ public class PowerupGen {
         }
 
         if (powerups.size() == 8) {
-            panel.score += 200;
+            panel.score += 200f;
             return;
         }
 
         if (powerups.size() == 0) {
-            rotation = 0.0;
+            rotation = 0.0f;
         }
 
-        Sprite powerup = new Sprite(panel, powerupPrefab, 0.0, 0.0, scale, 200, rotationSpeed);
+        Sprite powerup = new Sprite(panel, powerupPrefab, 0.0f, 0.0f, scale, 200f, rotationSpeed);
 
-        powerup.x = rotationRadius * Math.cos(2.0 * Math.PI * spawnRotations[powerups.size()]);
-        powerup.y = rotationRadius * Math.sin(2.0 * Math.PI * spawnRotations[powerups.size()]);
+        powerup.x = rotationRadius * (float) Math.cos(2.0f * (float) Math.PI * spawnRotations[powerups.size()]);
+        powerup.y = rotationRadius * (float) Math.sin(2.0f * (float) Math.PI * spawnRotations[powerups.size()]);
 
         cloud.addChild(powerup);
         powerups.add(powerup);
@@ -82,26 +82,29 @@ public class PowerupGen {
 
     public void moveAll() {
         for (int i = 0; i < powerups.size(); i++) {
-            double rot = 2.0 * Math.PI * (rotation + spawnRotations[i]);
+            float rot = 2.0f * (float) Math.PI * (rotation + spawnRotations[i]);
+
+            float rotation_cos = (float) Math.cos(rot);
+            float rotation_sin = (float) Math.sin(rot);
 
             powerups.get(i).x = cloud.x + cloud.xMidOffset - powerups.get(i).xMidOffset
-                    + rotationRadius * Math.cos(rot);
+                    + rotationRadius * rotation_cos;
             powerups.get(i).y = cloud.y + cloud.yMidOffset - powerups.get(i).yMidOffset
-                    + rotationRadius * Math.sin(rot);
+                    + rotationRadius * rotation_sin;
 
-            if (Math.cos(rot) < 0.6 && Math.sin(rot) < 0.8) {
-                if (powerups.get(i).widthScaled >= 0.0)
-                    powerups.get(i).widthScaled *= -1.0;
+            if (rotation_cos < 0.6f && rotation_sin < 0.8f) {
+                if (powerups.get(i).widthScaled >= 0.0f)
+                    powerups.get(i).widthScaled *= -1.0f;
             } else {
-                if (powerups.get(i).widthScaled < 0.0)
-                    powerups.get(i).widthScaled *= -1.0;
+                if (powerups.get(i).widthScaled < 0.0f)
+                    powerups.get(i).widthScaled *= -1.0f;
             }
         }
 
         rotation += panel.deltaTime * rotationSpeed * 1e-3;
 
-        if (rotation > 1.0) {
-            rotation = 0.0;
+        if (rotation > 1.0f) {
+            rotation = 0.0f;
         }
     }
 
