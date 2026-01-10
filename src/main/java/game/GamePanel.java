@@ -9,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.Rectangle2D;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -106,10 +107,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         actors.add(new Vector<>());
         actors.add(new Vector<>());
 
-        powerupGen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), prefabPickup, prefabPowerup, 2.0f, 0.03f,
-                0.3f, 64.0f);
+        final float flight_path_radius = 64.0f;
 
-        cloud.addGizmoCircle(Color.GREEN, cloud.xMidOffset, cloud.yMidOffset, 64.0f);
+        // TODO remove magic numbers
+        powerupGen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), prefabPickup, prefabPowerup, 2.0f, 0.03f,
+                0.3f, flight_path_radius);
+
+        final var flight_path = new Gizmo(
+                new Rectangle2D.Float(cloud.xMidOffset - flight_path_radius, cloud.yMidOffset - flight_path_radius,
+                        2.0f * flight_path_radius, 2.0f * flight_path_radius),
+                Color.GREEN, Gizmo.Shape.OVAL);
+        cloud.addGizmo(flight_path);
 
         enemyGen = new EnemyGen(this, actors.get(2), prefabEnemy, 2.0f, 0.05f);
 

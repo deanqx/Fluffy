@@ -16,7 +16,7 @@ public class Sprite extends Rectangle2D.Float {
     float heightScaled;
     float speed;
     private final float local_scale;
-    private float radius;
+    private float hitboxRadius;
 
     boolean visible = true;
     boolean toRemove = false;
@@ -33,18 +33,15 @@ public class Sprite extends Rectangle2D.Float {
     private int currentImageIndex = 0;
     private final Vector<Sprite> childs = new Vector<>();
 
-    // TODO move into class
-    private final Vector<Color> gizmoColors = new Vector<>();
-    private final Vector<java.lang.Float> gizmoXs = new Vector<>();
-    private final Vector<java.lang.Float> gizmoYs = new Vector<>();
-    private final Vector<java.lang.Float> gizmoRotations = new Vector<>();
+    // TODO replace Vector with ArrayList
+    private final Vector<Gizmo> gizmos = new Vector<>();
 
     public void rescale() {
         widthScaled = width * local_scale;
         heightScaled = height * local_scale;
         xMidOffset = widthScaled / 2.0f * customXMidFactor;
         yMidOffset = heightScaled / 2.0f * customYNidFactor;
-        radius = Math.max(widthScaled, heightScaled) / 2.0f * customRadiusFactor;
+        hitboxRadius = Math.max(widthScaled, heightScaled) / 2.0f * customRadiusFactor;
     }
 
     public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
@@ -52,26 +49,34 @@ public class Sprite extends Rectangle2D.Float {
         this(panel, prefab, x, y, scale, delay, speed, 1.0f, 1.0f, 1.0f);
     }
 
+    // TODO reduce parameter count
     public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
             final float delay, final float speed,
             final float custom_radius_factor, final float custom_x_mid_factor, final float custom_y_mid_factor) {
+        this.x = x;
+        this.y = y;
+        this.width = prefab.getImage(0).getWidth();
+        this.height = prefab.getImage(0).getHeight();
+
         this.panel = panel;
         this.speed = speed;
         this.local_scale = scale;
         this.prefab = prefab;
-        this.x = x;
-        this.y = y;
         this.delay = delay;
-        this.width = prefab.getImage(0).getWidth();
-        this.height = prefab.getImage(0).getHeight();
         this.customRadiusFactor = custom_radius_factor;
         this.customXMidFactor = custom_x_mid_factor;
         this.customYNidFactor = custom_y_mid_factor;
 
         rescale();
-        addGizmoCircle(Color.MAGENTA, (int) xMidOffset, (int) yMidOffset, (int) radius);
+
+        var hitboxGizmo = new Gizmo(
+                new Rectangle2D.Float(xMidOffset - hitboxRadius, yMidOffset - hitboxRadius,
+                        2.0f * hitboxRadius, 2.0f * hitboxRadius),
+                Color.MAGENTA, Gizmo.Shape.OVAL);
+        addGizmo(hitboxGizmo);
     }
 
+    // TODO replace with hasCollided()
     public float distance(final Sprite to) {
         final float a = (to.x + to.xMidOffset) - (x + xMidOffset);
         final float b = (to.y + to.yMidOffset) - (y + yMidOffset);
@@ -79,7 +84,7 @@ public class Sprite extends Rectangle2D.Float {
         // Pythagorean theorem
         final float center_distance = (float) Math.sqrt(a * a + b * b);
 
-        return center_distance - radius - to.radius;
+        return center_distance - hitboxRadius - to.hitboxRadius;
     }
 
     public boolean isOutOfBounds() {
@@ -106,22 +111,9 @@ public class Sprite extends Rectangle2D.Float {
                 (int) (widthScaled * panel.getScale()), (int) (heightScaled * panel.getScale()), null);
     }
 
-    void drawCircle(final Graphics g, final Color c, final float x_center, final float y_center, final float r) {
-        g.setColor(c);
-        g.drawOval((int) ((x_center - r) * panel.getScale()), (int) ((y_center - r) * panel.getScale()),
-                (int) (r * 2.0f * panel.getScale()), (int) (r * 2.0f * panel.getScale()));
-    }
-
-    public void addGizmoCircle(final Color c, final float x_center, final float y_center, final float r) {
-        gizmoColors.add(c);
-        gizmoXs.add(x_center);
-        gizmoYs.add(y_center);
-        gizmoRotations.add(r);
-    }
-
     public void drawGizmos(final Graphics g) {
-        for (int i = 0; i < gizmoXs.size(); i++) {
-            drawCircle(g, gizmoColors.get(i), x + gizmoXs.get(i), y + gizmoYs.get(i), gizmoRotations.get(i));
+        for (Gizmo gizmo : gizmos) {
+            gizmo.drawGizmo(g, panel.getScale());
         }
     }
 
@@ -155,5 +147,10 @@ public class Sprite extends Rectangle2D.Float {
             child.x += x_moved;
             child.y += y_moved;
         }
+    }
+
+    public void addGizmo(Gizmo gizmo) {
+        gizmo.setParent(this);
+        gizmos.add(gizmo);
     }
 }
