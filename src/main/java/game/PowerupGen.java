@@ -1,13 +1,13 @@
 package game;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PowerupGen {
     private final GamePanel panel;
     private final Sprite cloud;
-    private final Vector<Sprite> pickups;
-    private final Vector<Sprite> powerups;
+    private final ArrayList<Sprite> pickups;
+    private final ArrayList<Sprite> powerups;
     private final Prefab pickupPrefab;
     private final Prefab powerupPrefab;
     private final float fallingSpeed;
@@ -21,8 +21,8 @@ public class PowerupGen {
 
     private final float spawnRotations[] = { 0.0f, 0.5f, 0.75f, 0.25f, 0.125f, 0.375f, 0.625f, 0.875f };
 
-    public PowerupGen(final GamePanel panel, final Sprite cloud, final Vector<Sprite> pickups,
-            final Vector<Sprite> powerups,
+    public PowerupGen(final GamePanel panel, final Sprite cloud, final ArrayList<Sprite> pickups,
+            final ArrayList<Sprite> powerups,
             final Prefab pickup_prefab, final Prefab powerup_prefab, final float scale, final float falling_speed,
             final float rotation_speed, final float rotation_radius) {
         this.panel = panel;

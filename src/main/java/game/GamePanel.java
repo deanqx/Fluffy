@@ -10,7 +10,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Rectangle2D;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JFrame;
@@ -38,7 +38,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
     private Sprite cloud = null;
     /// 0: pickups 1: powerups 2: enemies 3: fogs TODO remove 2D anonymos array
-    private final Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
+    private final ArrayList<ArrayList<Sprite>> actors = new ArrayList<ArrayList<Sprite>>();
     private PowerupGen powerupGen;
     private EnemyGen enemyGen;
     private FogGen fogGen;
@@ -102,10 +102,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
         cloud = new Sprite(this, prefabCharacter, 375f, 400f, 2.0f, 500f, 0.3f, 0.625f, 0.92f, 1.1875f);
 
-        actors.add(new Vector<>());
-        actors.add(new Vector<>());
-        actors.add(new Vector<>());
-        actors.add(new Vector<>());
+        actors.add(new ArrayList<>());
+        actors.add(new ArrayList<>());
+        actors.add(new ArrayList<>());
+        actors.add(new ArrayList<>());
 
         final float flight_path_radius = 64.0f;
 
@@ -138,7 +138,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         cloud.move();
         powerupGen.moveAll();
 
-        for (final Vector<Sprite> layer : actors) {
+        for (final ArrayList<Sprite> layer : actors) {
             for (final Sprite it : layer) {
                 it.move();
             }
@@ -148,7 +148,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void update() {
         cloud.update();
 
-        for (final Vector<Sprite> layer : actors) {
+        for (final ArrayList<Sprite> layer : actors) {
             for (final Sprite it : layer) {
                 it.update();
             }
@@ -224,7 +224,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             cloud.drawGizmos(g);
         }
 
-        for (final Vector<Sprite> layer : actors) {
+        for (final ArrayList<Sprite> layer : actors) {
             for (final Sprite sprite : layer) {
                 sprite.drawGizmos(g);
             }
@@ -239,7 +239,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             cloud.draw(g);
         }
 
-        for (final Vector<Sprite> layer : actors) {
+        for (final ArrayList<Sprite> layer : actors) {
             for (final Sprite sprite : layer) {
                 sprite.draw(g);
             }
@@ -321,7 +321,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
             enemyGen.reuseOutOfBounds();
 
-            for (final Vector<Sprite> it : actors) {
+            for (final ArrayList<Sprite> it : actors) {
                 for (int i = it.size() - 1; i >= 0; i--) {
                     if (it.get(i).toRemove) {
                         it.remove(i);

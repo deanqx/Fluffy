@@ -3,7 +3,7 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Sprite extends Rectangle2D.Float {
     /// x middle offset
@@ -31,10 +31,8 @@ public class Sprite extends Rectangle2D.Float {
     private final float delay;
     private float current_animation_time = 0.0f;
     private int currentImageIndex = 0;
-    private final Vector<Sprite> childs = new Vector<>();
-
-    // TODO replace Vector with ArrayList
-    private final Vector<Gizmo> gizmos = new Vector<>();
+    private final ArrayList<Sprite> childs = new ArrayList<>();
+    private final ArrayList<Gizmo> gizmos = new ArrayList<>();
 
     public void rescale() {
         widthScaled = width * local_scale;

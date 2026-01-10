@@ -1,12 +1,12 @@
 package game;
 
 import java.awt.image.BufferedImage;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class FogGen {
     private final GamePanel panel;
-    private final Vector<Sprite> fogs;
+    private final ArrayList<Sprite> fogs;
     private final Prefab fogPrefab;
     private final float minScale;
     private final float maxScale;
@@ -16,7 +16,7 @@ public class FogGen {
     private final float spawnBottom;
     private final float spawnRight;
 
-    public FogGen(final GamePanel panel, final Vector<Sprite> fogs, final Prefab fog_prefab, final float min_scale,
+    public FogGen(final GamePanel panel, final ArrayList<Sprite> fogs, final Prefab fog_prefab, final float min_scale,
             final float max_scale) {
         this.panel = panel;
         this.fogs = fogs;

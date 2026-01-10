@@ -1,18 +1,18 @@
 package game;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EnemyGen {
     private final GamePanel panel;
-    private final Vector<Sprite> enemies;
+    private final ArrayList<Sprite> enemies;
     private final Prefab enemyPrefab;
     private final float enemyWidthScaled;
     private final float enemyHeightScaled;
     private final float scale;
     private float speed;
 
-    public EnemyGen(final GamePanel panel, final Vector<Sprite> enemies, final Prefab enemy_prefab,
+    public EnemyGen(final GamePanel panel, final ArrayList<Sprite> enemies, final Prefab enemy_prefab,
             final float scale, final float speed) {
         this.panel = panel;
         this.enemies = enemies;
