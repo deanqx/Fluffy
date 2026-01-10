@@ -44,7 +44,7 @@ public class PowerupGen {
         ThreadLocalRandom t = ThreadLocalRandom.current();
 
         for (int i = 0; i < amount; i++) {
-            float x = t.nextFloat(1.0f, panel.width - pickupWidthScaled - 1.0f);
+            float x = t.nextFloat(1.0f, panel.getGameWidth() - pickupWidthScaled - 1.0f);
             float y = pickupHeightScaled * -scale;
 
             Sprite new_pickup = new Sprite(panel, pickupPrefab, x, y, scale, 0, fallingSpeed);
@@ -63,7 +63,7 @@ public class PowerupGen {
         }
 
         if (powerups.size() == 8) {
-            panel.score += 200f;
+            panel.addScore(200.0f);
             return;
         }
 
@@ -101,7 +101,7 @@ public class PowerupGen {
             }
         }
 
-        rotation += panel.deltaTime * rotationSpeed * 1e-3;
+        rotation += panel.getDeltaTime() * rotationSpeed * 1e-3;
 
         if (rotation > 1.0f) {
             rotation = 0.0f;

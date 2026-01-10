@@ -5,16 +5,16 @@ import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EnemyGen {
-    private GamePanel panel;
-    private Vector<Sprite> enemies;
-    private BufferedImage[] enemyPrefab;
+    private final GamePanel panel;
+    private final Vector<Sprite> enemies;
+    private final BufferedImage[] enemyPrefab;
     private final float enemyWidthScaled;
     private final float enemyHeightScaled;
     private final float scale;
+    private float speed;
 
-    public float speed;
-
-    public EnemyGen(GamePanel panel, Vector<Sprite> enemies, BufferedImage[] enemy_prefab, float scale, float speed) {
+    public EnemyGen(final GamePanel panel, final Vector<Sprite> enemies, final BufferedImage[] enemy_prefab,
+            final float scale, final float speed) {
         this.panel = panel;
         this.enemies = enemies;
         this.scale = scale;
@@ -25,14 +25,14 @@ public class EnemyGen {
         enemyHeightScaled = enemy_prefab[0].getHeight() * scale;
     }
 
-    public void spawn(int amount) {
-        ThreadLocalRandom rng = ThreadLocalRandom.current();
+    public void spawn(final int amount) {
+        final ThreadLocalRandom rng = ThreadLocalRandom.current();
 
         for (int i = 0; i < amount; i++) {
-            float x = rng.nextFloat(1.0f, panel.width - enemyWidthScaled - 1.0f);
-            float y = enemyHeightScaled * -scale;
+            final float x = rng.nextFloat(1.0f, panel.getGameWidth() - enemyWidthScaled - 1.0f);
+            final float y = enemyHeightScaled * -scale;
 
-            Sprite new_enemy = new Sprite(panel, enemyPrefab, x, y, scale, 500.0f, speed);
+            final Sprite new_enemy = new Sprite(panel, enemyPrefab, x, y, scale, 500.0f, speed);
             new_enemy.yVelocity = speed;
 
             enemies.add(new_enemy);
@@ -40,15 +40,19 @@ public class EnemyGen {
     }
 
     public void reuseOutOfBounds() {
-        ThreadLocalRandom rng = ThreadLocalRandom.current();
+        final ThreadLocalRandom rng = ThreadLocalRandom.current();
 
-        for (Sprite enemy : enemies) {
+        for (final Sprite enemy : enemies) {
             if (enemy.isOutOfBounds()) {
-                enemy.x = rng.nextFloat(1.0f, panel.width - enemyWidthScaled - 1.0f);
+                enemy.x = rng.nextFloat(1.0f, panel.getGameWidth() - enemyWidthScaled - 1.0f);
                 enemy.y = enemyHeightScaled * -scale;
                 enemy.speed = speed;
                 enemy.yVelocity = speed;
             }
         }
+    }
+
+    public void setSpeed(final float speed) {
+        this.speed = speed;
     }
 }

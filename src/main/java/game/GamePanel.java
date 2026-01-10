@@ -16,41 +16,41 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
-    JFrame frame;
-    float scale = 1.0f;
-    float width = 1280.0f;
-    float height = 720.0f;
+    private JFrame frame;
+    private float scale = 1.0f;
+    private float width = 1280.0f;
+    private float height = 720.0f;
 
-    float fps = 0.0f;
-    float deltaTime;
-    float fixedUpdateCounter;
-    final float fixedUpdateInterval = 1000.0f;
+    private float fps = 0.0f;
+    private float deltaTime;
+    private float fixedUpdateCounter;
+    private final float fixedUpdateInterval = 1000.0f;
 
-    float score;
-    float scoreBest;
+    private float score;
+    private float scoreBest;
 
-    Prefaps prefaps;
-    Sprite cloud = null;
+    private Prefaps prefaps;
+    private Sprite cloud = null;
     /// 0: pickups 1: powerups 2: enemies 3: fogs TODO remove 2D anonymos array
-    Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
-    PowerupGen powerupGen;
-    EnemyGen enemyGen;
-    FogGen fogGen;
+    private Vector<Vector<Sprite>> actors = new Vector<Vector<Sprite>>();
+    private PowerupGen powerupGen;
+    private EnemyGen enemyGen;
+    private FogGen fogGen;
 
-    boolean debugMode = false;
-    boolean keyUp;
-    boolean keyLeft;
-    boolean keyDown;
-    boolean keyRight;
+    private boolean debugMode = false;
+    private boolean keyUp;
+    private boolean keyLeft;
+    private boolean keyDown;
+    private boolean keyRight;
 
-    public GamePanel(Prefaps prefaps) {
+    public GamePanel(final Prefaps prefaps) {
         this.prefaps = prefaps;
 
-        JPanel panel = this;
+        final JPanel panel = this;
         this.setPreferredSize(new Dimension((int) width, (int) height));
         this.setBackground(new Color(89, 108, 171, 255));
 
-        JPanel content_panel = new JPanel();
+        final JPanel content_panel = new JPanel();
         content_panel.setBackground(Color.black);
         content_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         content_panel.add(this);
@@ -65,8 +65,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
         content_panel.addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentResized(ComponentEvent e) {
-                Dimension d = new Dimension(content_panel.getWidth(), content_panel.getWidth() * 9 / 16);
+            public void componentResized(final ComponentEvent e) {
+                final Dimension d = new Dimension(content_panel.getWidth(), content_panel.getWidth() * 9 / 16);
 
                 if (d.height > content_panel.getHeight()) {
                     d.height = content_panel.getHeight();
@@ -82,7 +82,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         });
         init();
 
-        Thread t = new Thread(this);
+        final Thread t = new Thread(this);
         t.start();
     }
 
@@ -121,8 +121,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         cloud.move();
         powerupGen.moveAll();
 
-        for (Vector<Sprite> layer : actors) {
-            for (Sprite it : layer) {
+        for (final Vector<Sprite> layer : actors) {
+            for (final Sprite it : layer) {
                 it.move();
             }
         }
@@ -131,8 +131,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void update() {
         cloud.update();
 
-        for (Vector<Sprite> layer : actors) {
-            for (Sprite it : layer) {
+        for (final Vector<Sprite> layer : actors) {
+            for (final Sprite it : layer) {
                 it.update();
             }
         }
@@ -176,15 +176,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void collisionObjects() {
         collisionBounds();
 
-        for (Sprite pickup : actors.get(0)) {
+        for (final Sprite pickup : actors.get(0)) {
             if (cloud.distance(pickup) <= 0.0f) {
                 pickup.toRemove = true;
                 powerupGen.pickup();
             }
         }
 
-        for (Sprite powerup : actors.get(1)) {
-            for (Sprite enemy : actors.get(2)) {
+        for (final Sprite powerup : actors.get(1)) {
+            for (final Sprite enemy : actors.get(2)) {
                 if (powerup.visible && powerup.distance(enemy) <= 0.0f) {
                     powerup.visible = false;
                     enemy.toRemove = true;
@@ -194,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             }
         }
 
-        for (Sprite enemies : actors.get(2)) {
+        for (final Sprite enemies : actors.get(2)) {
             if (cloud.distance(enemies) <= 0.0f) {
                 reset();
                 return;
@@ -202,28 +202,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    private void drawGizmos(Graphics g) {
+    private void drawGizmos(final Graphics g) {
         if (cloud != null) {
             cloud.drawGizmos(g);
         }
 
-        for (Vector<Sprite> layer : actors) {
-            for (Sprite sprite : layer) {
+        for (final Vector<Sprite> layer : actors) {
+            for (final Sprite sprite : layer) {
                 sprite.drawGizmos(g);
             }
         }
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
         if (cloud != null) {
             cloud.draw(g);
         }
 
-        for (Vector<Sprite> layer : actors) {
-            for (Sprite sprite : layer) {
+        for (final Vector<Sprite> layer : actors) {
+            for (final Sprite sprite : layer) {
                 sprite.draw(g);
             }
         }
@@ -246,20 +246,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     public void spawn() {
-        ThreadLocalRandom t = ThreadLocalRandom.current();
+        final ThreadLocalRandom t = ThreadLocalRandom.current();
 
         float powerup_chance = 0.25f;
         float enemy_chance = 0.5f;
 
         if (score < 1000.0f) {
-            enemyGen.speed = 0.075f;
+            enemyGen.setSpeed(0.075f);
         } else if (score < 3000.0f) {
             powerup_chance = 0.5f;
             enemy_chance = 0.35f;
-            enemyGen.speed = 0.1f;
+            enemyGen.setSpeed(0.1f);
         } else if (score < 4000.0f) {
             enemy_chance = 0.3f;
-            enemyGen.speed = 0.15f;
+            enemyGen.setSpeed(0.15f);
         }
 
         if (t.nextFloat(0.0f, 1.0f) <= powerup_chance) {
@@ -304,7 +304,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
             enemyGen.reuseOutOfBounds();
 
-            for (Vector<Sprite> it : actors) {
+            for (final Vector<Sprite> it : actors) {
                 for (int i = it.size() - 1; i >= 0; i--) {
                     if (it.get(i).toRemove) {
                         it.remove(i);
@@ -316,13 +316,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
             try {
                 Thread.sleep(8);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 System.out.println("Thread got interrupted");
             }
         }
     }
 
-    void keyAction(KeyEvent e, boolean pressed) {
+    void keyAction(final KeyEvent e, final boolean pressed) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP, KeyEvent.VK_W -> keyUp = pressed;
             case KeyEvent.VK_LEFT, KeyEvent.VK_A -> keyLeft = pressed;
@@ -332,7 +332,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(final KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_G) {
             debugMode = !debugMode;
         }
@@ -341,11 +341,31 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(final KeyEvent e) {
         keyAction(e, false);
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void keyTyped(final KeyEvent e) {
+    }
+
+    public void addScore(float amount) {
+        score += amount;
+    }
+
+    public float getDeltaTime() {
+        return deltaTime;
+    }
+
+    public float getGameHeight() {
+        return height;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public float getGameWidth() {
+        return width;
     }
 }

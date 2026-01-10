@@ -7,37 +7,38 @@ import java.awt.image.BufferedImage;
 import java.util.Vector;
 
 public class Sprite extends Rectangle2D.Float {
-    float speed;
-    // x middle offset
+    /// x middle offset
     float xMidOffset;
-    // y middle offset
+    /// y middle offset
     float yMidOffset;
     float xVelocity;
     float yVelocity;
-    float scale;
+    private float scale;
     float widthScaled;
     float heightScaled;
-    float radius;
+    private float radius;
+    float speed;
+
     boolean visible = true;
     boolean toRemove = false;
 
-    float customRadiusFactor;
-    float customXMidFactor;
-    float customYNidFactor;
+    private float customRadiusFactor;
+    private float customXMidFactor;
+    private float customYNidFactor;
 
-    private GamePanel panel;
+    private final GamePanel panel;
     // Time between images
-    private float delay;
+    private final float delay;
     private float animation = 0.0f;
-    private BufferedImage[] pics;
+    private final BufferedImage[] pics;
     private int currentPic = 0;
-    private Vector<Sprite> childs = new Vector<>();
+    private final Vector<Sprite> childs = new Vector<>();
 
     // TODO move into class
-    private Vector<Color> gizmoColors = new Vector<>();
-    private Vector<java.lang.Float> gizmoXs = new Vector<>();
-    private Vector<java.lang.Float> gizmoYs = new Vector<>();
-    private Vector<java.lang.Float> gizmoRotations = new Vector<>();
+    private final Vector<Color> gizmoColors = new Vector<>();
+    private final Vector<java.lang.Float> gizmoXs = new Vector<>();
+    private final Vector<java.lang.Float> gizmoYs = new Vector<>();
+    private final Vector<java.lang.Float> gizmoRotations = new Vector<>();
 
     public void rescale() {
         widthScaled = width * scale;
@@ -47,12 +48,14 @@ public class Sprite extends Rectangle2D.Float {
         radius = Math.max(widthScaled, heightScaled) / 2.0f * customRadiusFactor;
     }
 
-    public Sprite(GamePanel p, BufferedImage[] imgs, float x, float y, float scale, float delay, float speed) {
+    public Sprite(final GamePanel p, final BufferedImage[] imgs, final float x, final float y, final float scale,
+            final float delay, final float speed) {
         this(p, imgs, x, y, scale, delay, speed, 1.0f, 1.0f, 1.0f);
     }
 
-    public Sprite(GamePanel p, BufferedImage[] imgs, float x, float y, float scale, float delay, float speed,
-            float custom_radius_factor, float custom_x_mid_factor, float custom_y_mid_factor) {
+    public Sprite(final GamePanel p, final BufferedImage[] imgs, final float x, final float y, final float scale,
+            final float delay, final float speed,
+            final float custom_radius_factor, final float custom_x_mid_factor, final float custom_y_mid_factor) {
         panel = p;
         this.speed = speed;
         this.scale = scale;
@@ -70,20 +73,20 @@ public class Sprite extends Rectangle2D.Float {
         addGizmoCircle(Color.MAGENTA, (int) xMidOffset, (int) yMidOffset, (int) radius);
     }
 
-    public float distance(Sprite to) {
-        float a = (to.x + to.xMidOffset) - (x + xMidOffset);
-        float b = (to.y + to.yMidOffset) - (y + yMidOffset);
+    public float distance(final Sprite to) {
+        final float a = (to.x + to.xMidOffset) - (x + xMidOffset);
+        final float b = (to.y + to.yMidOffset) - (y + yMidOffset);
 
         // Pythagorean theorem
-        float center_distance = (float) Math.sqrt(a * a + b * b);
+        final float center_distance = (float) Math.sqrt(a * a + b * b);
 
         return center_distance - radius - to.radius;
     }
 
     public boolean isOutOfBounds() {
-        if (x > panel.width) {
+        if (x > panel.getGameWidth()) {
             return true;
-        } else if (y > panel.height) {
+        } else if (y > panel.getGameHeight()) {
             return true;
         }
 
@@ -98,7 +101,7 @@ public class Sprite extends Rectangle2D.Float {
         }
     }
 
-    public void draw(Graphics g) {
+    public void draw(final Graphics g) {
         if (!visible || toRemove)
             return;
 
@@ -109,24 +112,24 @@ public class Sprite extends Rectangle2D.Float {
         else
             _x = x - widthScaled;
 
-        g.drawImage(pics[currentPic], (int) (_x * panel.scale), (int) (y * panel.scale),
-                (int) (widthScaled * panel.scale), (int) (heightScaled * panel.scale), null);
+        g.drawImage(pics[currentPic], (int) (_x * panel.getScale()), (int) (y * panel.getScale()),
+                (int) (widthScaled * panel.getScale()), (int) (heightScaled * panel.getScale()), null);
     }
 
-    void drawCircle(Graphics g, Color c, float x_center, float y_center, float r) {
+    void drawCircle(final Graphics g, final Color c, final float x_center, final float y_center, final float r) {
         g.setColor(c);
-        g.drawOval((int) ((x_center - r) * panel.scale), (int) ((y_center - r) * panel.scale),
-                (int) (r * 2.0f * panel.scale), (int) (r * 2.0f * panel.scale));
+        g.drawOval((int) ((x_center - r) * panel.getScale()), (int) ((y_center - r) * panel.getScale()),
+                (int) (r * 2.0f * panel.getScale()), (int) (r * 2.0f * panel.getScale()));
     }
 
-    public void addGizmoCircle(Color c, float x_center, float y_center, float r) {
+    public void addGizmoCircle(final Color c, final float x_center, final float y_center, final float r) {
         gizmoColors.add(c);
         gizmoXs.add(x_center);
         gizmoYs.add(y_center);
         gizmoRotations.add(r);
     }
 
-    public void drawGizmos(Graphics g) {
+    public void drawGizmos(final Graphics g) {
         for (int i = 0; i < gizmoXs.size(); i++) {
             drawCircle(g, gizmoColors.get(i), x + gizmoXs.get(i), y + gizmoYs.get(i), gizmoRotations.get(i));
         }
@@ -134,7 +137,7 @@ public class Sprite extends Rectangle2D.Float {
 
     public void update() {
         if (pics.length > 1) {
-            animation += panel.deltaTime;
+            animation += panel.getDeltaTime();
 
             if (animation > delay) {
                 animation = 0.0f;
@@ -143,20 +146,20 @@ public class Sprite extends Rectangle2D.Float {
         }
     }
 
-    public void addChild(Sprite child) {
+    public void addChild(final Sprite child) {
         child.x += x + xMidOffset - child.xMidOffset;
         child.y += y + yMidOffset - child.yMidOffset;
         childs.add(child);
     }
 
     public void move() {
-        float x_moved = xVelocity * panel.deltaTime;
-        float y_moved = yVelocity * panel.deltaTime;
+        final float x_moved = xVelocity * panel.getDeltaTime();
+        final float y_moved = yVelocity * panel.getDeltaTime();
 
         x += x_moved;
         y += y_moved;
 
-        for (Sprite child : childs) {
+        for (final Sprite child : childs) {
             child.x += x_moved;
             child.y += y_moved;
         }

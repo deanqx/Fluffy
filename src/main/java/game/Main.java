@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 public class Main {
     public static void main(String[] args) throws URISyntaxException, IOException, FontFormatException {
         // If not enabled frames are only updated with interaction
-        System.setProperty("sun.java2d.opengl", "true"); // TODO use vulkan
+        System.setProperty("sun.java2d.opengl", "true");
 
         System.out.println("Working Directory: " + System.getProperty("user.dir"));
 
