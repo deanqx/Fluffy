@@ -109,7 +109,7 @@ public class PowerupGen {
             }
         }
 
-        rotation += panel.getDeltaTime() * rotationSpeed * 1e-3;
+        rotation += panel.getDeltaTimeMs() * rotationSpeed * 1e-3;
 
         if (rotation > 1.0f) {
             rotation = 0.0f;

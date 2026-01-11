@@ -24,8 +24,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private final float gameHeight = 720.0f;
 
     private float fps = 0.0f;
-    /// 1 / milliseconds
-    private float deltaTime;
+    /// Time difference between last frame. Used to sync different frame rates.
+    private float deltaTimeMs;
     private float fixedUpdateCounter;
     private final float fixedUpdateInterval = 1000.0f;
 
@@ -291,15 +291,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         long last = System.nanoTime();
 
         while (frame.isVisible()) {
-            // frame time difference converted to one over milli seconds floating point
-            deltaTime = (float) (System.nanoTime() - last) * 1e-6f;
+            deltaTimeMs = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
-            fixedUpdateCounter += deltaTime;
-            // TODO remove e3
-            fps = 1e3f / deltaTime;
+            fixedUpdateCounter += deltaTimeMs;
+            fps = 1e6f / deltaTimeMs;
 
             // Add 25 per second
-            score += deltaTime * 0.025f;
+            score += deltaTimeMs * 0.025f;
 
             if (objectsAddQueue.size() > 0) {
                 objects.addAll(objectsAddQueue);
@@ -366,8 +364,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         score += amount;
     }
 
-    public float getDeltaTime() {
-        return deltaTime;
+    public float getDeltaTimeMs() {
+        return deltaTimeMs;
     }
 
     public float getGameHeight() {

@@ -116,7 +116,7 @@ public class Sprite extends GameObject {
             return;
         }
 
-        current_image_time += panel.getDeltaTime();
+        current_image_time += panel.getDeltaTimeMs();
 
         if (current_image_time > each_image_duration) {
             current_image_time = 0.0f;
@@ -131,8 +131,8 @@ public class Sprite extends GameObject {
     }
 
     public void move() {
-        final float x_moved = xVelocity * panel.getDeltaTime();
-        final float y_moved = yVelocity * panel.getDeltaTime();
+        final float x_moved = xVelocity * panel.getDeltaTimeMs();
+        final float y_moved = yVelocity * panel.getDeltaTimeMs();
 
         x += x_moved;
         y += y_moved;
