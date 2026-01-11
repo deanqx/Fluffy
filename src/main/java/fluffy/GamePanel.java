@@ -151,21 +151,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     private void updateVelocity() {
-        // TODO
-        if (keyUp)
+        if (keyUp) {
             character.yVelocity = -character.speed;
-        else if (keyDown)
+        } else if (keyDown) {
             character.yVelocity = character.speed;
+        }
 
-        if (keyLeft)
+        if (keyLeft) {
             character.xVelocity = -character.speed;
-        else if (keyRight)
+        } else if (keyRight) {
             character.xVelocity = character.speed;
-
-        if (keyUp == keyDown)
-            character.yVelocity = 0.0f;
-        if (keyLeft == keyRight)
-            character.xVelocity = 0.0f;
+        }
     }
 
     public void collisionBounds() {

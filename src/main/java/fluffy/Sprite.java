@@ -107,15 +107,15 @@ public class Sprite extends GameObject {
     }
 
     public void move() {
-        final float x_moved = xVelocity * panel.getDeltaTimeMs();
-        final float y_moved = yVelocity * panel.getDeltaTimeMs();
+        final float new_x = xVelocity * panel.getDeltaTimeMs();
+        final float new_y = yVelocity * panel.getDeltaTimeMs();
 
-        x += x_moved;
-        y += y_moved;
+        x += new_x;
+        y += new_y;
 
         for (final Sprite child : childs) {
-            child.x += x_moved;
-            child.y += y_moved;
+            child.x += new_x;
+            child.y += new_y;
         }
     }
 
