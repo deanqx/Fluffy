@@ -1,4 +1,4 @@
-package game;
+package fluffy;
 
 public class Character extends Sprite {
     public Character(GamePanel panel, Prefab prefab, float x, float y, float scale, float each_image_duration,

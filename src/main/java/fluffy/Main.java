@@ -1,4 +1,4 @@
-package game;
+package fluffy;
 
 import java.awt.Font;
 import java.awt.FontFormatException;

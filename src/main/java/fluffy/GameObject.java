@@ -1,5 +1,4 @@
-// TODO rename to fluffy
-package game;
+package fluffy;
 
 import java.awt.Graphics;
 

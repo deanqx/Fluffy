@@ -1,4 +1,4 @@
-package game;
+package fluffy;
 
 import java.awt.Color;
 import java.awt.Graphics;

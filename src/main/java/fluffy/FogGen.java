@@ -1,4 +1,4 @@
-package game;
+package fluffy;
 
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
@@ -64,7 +64,6 @@ public class FogGen {
                     fog.y = rng.nextFloat(spawnTop, spawnBottom - fog.heightScaled);
                 }
 
-                // TODO bug clouds getting slower
                 final float x_vel_variance = rng.nextFloat(0.8f, 1.0f);
                 final float y_vel_variance = rng.nextFloat(0.8f, 1.0f);
 
