@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JFrame;
@@ -23,6 +24,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private final float gameHeight = 720.0f;
 
     private float fps = 0.0f;
+    /// 1 / milliseconds
     private float deltaTime;
     private float fixedUpdateCounter;
     private final float fixedUpdateInterval = 1000.0f;
@@ -37,11 +39,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private final Prefab prefabPickup;
 
     private Sprite cloud = null;
-    /// 0: pickups 1: powerups 2: enemies 3: fogs TODO remove 2D anonymos array
-    private final ArrayList<ArrayList<Sprite>> actors = new ArrayList<ArrayList<Sprite>>();
     private PowerupGen powerupGen;
     private EnemyGen enemyGen;
     private FogGen fogGen;
+
+    private ArrayList<GameObject> objects = new ArrayList<>();
+    /// these GameObjects are added in the next frame
+    private ArrayList<GameObject> objectsAddQueue = new ArrayList<>();
 
     private boolean debugMode = false;
     private boolean keyUp;
@@ -62,7 +66,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         this.setBackground(new Color(89, 108, 171, 255));
 
         final JPanel content_panel = new JPanel();
-        content_panel.setBackground(Color.black);
+        content_panel.setBackground(Color.BLACK);
         content_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         content_panel.add(this);
 
@@ -70,6 +74,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addKeyListener(this);
+        frame.setBackground(Color.BLACK);
         frame.setContentPane(content_panel);
         frame.pack();
         frame.setVisible(true);
@@ -100,17 +105,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void init() {
         score = 0;
 
-        cloud = new Sprite(this, prefabCharacter, 375f, 400f, 2.0f, 500f, 0.3f, 0.625f, 0.92f, 1.1875f);
-
-        actors.add(new ArrayList<>());
-        actors.add(new ArrayList<>());
-        actors.add(new ArrayList<>());
-        actors.add(new ArrayList<>());
+        cloud = new Character(this, prefabCharacter, 375f, 400f, 2.0f, 500f, 0.3f, 0.625f, 0.92f, 1.1875f);
+        objects.add(cloud);
 
         final float flight_path_radius = 64.0f;
 
         // TODO remove magic numbers
-        powerupGen = new PowerupGen(this, cloud, actors.get(0), actors.get(1), prefabPickup, prefabPowerup, 2.0f, 0.03f,
+        powerupGen = new PowerupGen(this, cloud, prefabPickup, prefabPowerup, 2.0f, 0.03f,
                 0.3f, flight_path_radius);
 
         final var flight_path = new Gizmo(
@@ -119,9 +120,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 Color.GREEN, Gizmo.Shape.OVAL);
         cloud.addGizmo(flight_path);
 
-        enemyGen = new EnemyGen(this, actors.get(2), prefabEnemy, 2.0f, 0.05f);
+        enemyGen = new EnemyGen(this, prefabEnemy, 2.0f, 0.05f);
 
-        fogGen = new FogGen(this, actors.get(3), prefabFog, 0.5f, 1.2f);
+        fogGen = new FogGen(this, prefabFog, 0.5f, 1.2f);
         fogGen.spawn(10, 0.03f);
     }
 
@@ -130,32 +131,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             scoreBest = score;
         }
 
-        actors.clear();
+        objects.clear();
         init();
     }
 
-    private void moveObjects() {
-        cloud.move();
-        powerupGen.moveAll();
-
-        for (final ArrayList<Sprite> layer : actors) {
-            for (final Sprite it : layer) {
-                it.move();
-            }
-        }
-    }
-
-    private void update() {
-        cloud.update();
-
-        for (final ArrayList<Sprite> layer : actors) {
-            for (final Sprite it : layer) {
-                it.update();
-            }
-        }
-    }
-
     private void updateVelocity() {
+        // TODO
         if (keyUp)
             cloud.yVelocity = -cloud.speed;
         else if (keyDown)
@@ -193,28 +174,34 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void collisionObjects() {
         collisionBounds();
 
-        for (final Sprite pickup : actors.get(0)) {
-            if (cloud.distance(pickup) <= 0.0f) {
-                pickup.toRemove = true;
-                powerupGen.pickup();
-            }
-        }
-
-        for (final Sprite powerup : actors.get(1)) {
-            for (final Sprite enemy : actors.get(2)) {
-                if (powerup.visible && powerup.distance(enemy) <= 0.0f) {
-                    powerup.visible = false;
-                    enemy.toRemove = true;
-
-                    break;
+        for (final GameObject object : objects) {
+            switch (object) {
+                case Pickup pickup -> {
+                    if (pickup.hasCollided(cloud)) {
+                        pickup.toRemove = true;
+                        powerupGen.pickup();
+                    }
                 }
-            }
-        }
+                case Enemy enemy -> {
+                    if (enemy.hasCollided(cloud)) {
+                        reset();
+                        return;
+                    }
 
-        for (final Sprite enemies : actors.get(2)) {
-            if (cloud.distance(enemies) <= 0.0f) {
-                reset();
-                return;
+                    for (final GameObject object2 : objects) {
+                        if (object2 instanceof final Powerup powerup) {
+                            if (powerup.visible && powerup.hasCollided(enemy)) {
+                                powerup.visible = false;
+                                enemy.visible = false;
+                                enemy.toRemove = true;
+
+                                break;
+                            }
+                        }
+                    }
+                }
+                default -> {
+                }
             }
         }
     }
@@ -224,10 +211,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             cloud.drawGizmos(g);
         }
 
-        for (final ArrayList<Sprite> layer : actors) {
-            for (final Sprite sprite : layer) {
-                sprite.drawGizmos(g);
-            }
+        for (final GameObject object : objects) {
+            object.drawGizmos(g);
         }
     }
 
@@ -239,10 +224,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             cloud.draw(g);
         }
 
-        for (final ArrayList<Sprite> layer : actors) {
-            for (final Sprite sprite : layer) {
-                sprite.draw(g);
-            }
+        for (final GameObject object : objects) {
+            object.draw(g);
         }
 
         if (debugMode) {
@@ -295,6 +278,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         fogGen.reuseOutOfBounds();
     }
 
+    private void moveAll() {
+        powerupGen.moveAll();
+
+        for (final GameObject object : objects) {
+            object.move();
+        }
+    }
+
     @Override
     public void run() {
         long last = System.nanoTime();
@@ -304,15 +295,26 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             deltaTime = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
             fixedUpdateCounter += deltaTime;
+            // TODO remove e3
             fps = 1e3f / deltaTime;
 
             // Add 25 per second
             score += deltaTime * 0.025f;
 
+            if (objectsAddQueue.size() > 0) {
+                objects.addAll(objectsAddQueue);
+                objectsAddQueue.clear();
+            }
+
             updateVelocity();
-            moveObjects();
+
+            moveAll();
+
             collisionObjects();
-            update();
+
+            for (final GameObject object : objects) {
+                object.update();
+            }
 
             if (fixedUpdateCounter >= fixedUpdateInterval) {
                 fixedUpdateCounter = 0.0f;
@@ -321,13 +323,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
             enemyGen.reuseOutOfBounds();
 
-            for (final ArrayList<Sprite> it : actors) {
-                for (int i = it.size() - 1; i >= 0; i--) {
-                    if (it.get(i).toRemove) {
-                        it.remove(i);
-                    }
-                }
-            }
+            objects.removeIf(object -> object.toRemove);
 
             repaint();
 
@@ -384,5 +380,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
     public float getGameWidth() {
         return gameWidth;
+    }
+
+    public Iterator<GameObject> iterateObjects() {
+        return objects.iterator();
+    }
+
+    public void addObject(GameObject object) {
+        objectsAddQueue.add(object);
     }
 }

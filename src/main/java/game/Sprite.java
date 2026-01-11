@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-public class Sprite extends Rectangle2D.Float {
+public class Sprite extends GameObject {
     /// x middle offset
     float xMidOffset;
     /// y middle offset
@@ -18,18 +18,14 @@ public class Sprite extends Rectangle2D.Float {
     private final float local_scale;
     private float hitboxRadius;
 
-    boolean visible = true;
-    boolean toRemove = false;
-
     private final float customRadiusFactor;
     private final float customXMidFactor;
     private final float customYNidFactor;
 
     private final GamePanel panel;
     private final Prefab prefab;
-    // Time between images
-    private final float delay;
-    private float current_animation_time = 0.0f;
+    private final float each_image_duration;
+    private float current_image_time = 0.0f;
     private int currentImageIndex = 0;
     private final ArrayList<Sprite> childs = new ArrayList<>();
     private final ArrayList<Gizmo> gizmos = new ArrayList<>();
@@ -43,13 +39,13 @@ public class Sprite extends Rectangle2D.Float {
     }
 
     public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
-            final float delay, final float speed) {
-        this(panel, prefab, x, y, scale, delay, speed, 1.0f, 1.0f, 1.0f);
+            final float each_image_duration, final float speed) {
+        this(panel, prefab, x, y, scale, each_image_duration, speed, 1.0f, 1.0f, 1.0f);
     }
 
     // TODO reduce parameter count
     public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
-            final float delay, final float speed,
+            final float each_image_duration, final float speed,
             final float custom_radius_factor, final float custom_x_mid_factor, final float custom_y_mid_factor) {
         this.x = x;
         this.y = y;
@@ -60,7 +56,7 @@ public class Sprite extends Rectangle2D.Float {
         this.speed = speed;
         this.local_scale = scale;
         this.prefab = prefab;
-        this.delay = delay;
+        this.each_image_duration = each_image_duration;
         this.customRadiusFactor = custom_radius_factor;
         this.customXMidFactor = custom_x_mid_factor;
         this.customYNidFactor = custom_y_mid_factor;
@@ -74,15 +70,15 @@ public class Sprite extends Rectangle2D.Float {
         addGizmo(hitboxGizmo);
     }
 
-    // TODO replace with hasCollided()
-    public float distance(final Sprite to) {
+    public boolean hasCollided(final Sprite to) {
         final float a = (to.x + to.xMidOffset) - (x + xMidOffset);
         final float b = (to.y + to.yMidOffset) - (y + yMidOffset);
 
         // Pythagorean theorem
         final float center_distance = (float) Math.sqrt(a * a + b * b);
+        final float center_distance_from_hitbox = center_distance - hitboxRadius - to.hitboxRadius;
 
-        return center_distance - hitboxRadius - to.hitboxRadius;
+        return center_distance_from_hitbox <= 0.0f;
     }
 
     public boolean isOutOfBounds() {
@@ -120,10 +116,10 @@ public class Sprite extends Rectangle2D.Float {
             return;
         }
 
-        current_animation_time += panel.getDeltaTime();
+        current_image_time += panel.getDeltaTime();
 
-        if (current_animation_time > delay) {
-            current_animation_time = 0.0f;
+        if (current_image_time > each_image_duration) {
+            current_image_time = 0.0f;
             advanceAnimation();
         }
     }

@@ -15,15 +15,15 @@ public class Gizmo extends Rectangle2D.Float {
     private final Color color;
     private final Shape shape;
     /// can be null
-    private Rectangle2D.Float parent = null;
+    private GameObject parent = null;
 
-    public Gizmo(final Rectangle2D.Float position, final Color color, final Shape shape) {
+    public Gizmo(final Rectangle2D.Float position_dimension, final Color color, final Shape shape) {
         this.color = color;
         this.shape = shape;
-        this.x = position.x;
-        this.y = position.y;
-        this.width = position.width;
-        this.height = position.height;
+        this.x = position_dimension.x;
+        this.y = position_dimension.y;
+        this.width = position_dimension.width;
+        this.height = position_dimension.height;
     }
 
     public void drawGizmo(final Graphics g, final float scale) {
@@ -43,7 +43,7 @@ public class Gizmo extends Rectangle2D.Float {
         }
     }
 
-    public void setParent(Rectangle2D.Float parent) {
+    public void setParent(GameObject parent) {
         this.parent = parent;
     }
 }

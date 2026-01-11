@@ -1,12 +1,10 @@
 package game;
 
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class FogGen {
     private final GamePanel panel;
-    private final ArrayList<Sprite> fogs;
     private final Prefab fogPrefab;
     private final float minScale;
     private final float maxScale;
@@ -16,10 +14,9 @@ public class FogGen {
     private final float spawnBottom;
     private final float spawnRight;
 
-    public FogGen(final GamePanel panel, final ArrayList<Sprite> fogs, final Prefab fog_prefab, final float min_scale,
+    public FogGen(final GamePanel panel, final Prefab fog_prefab, final float min_scale,
             final float max_scale) {
         this.panel = panel;
-        this.fogs = fogs;
         this.fogPrefab = fog_prefab;
         this.minScale = min_scale;
         this.maxScale = max_scale;
@@ -40,38 +37,40 @@ public class FogGen {
             final float x_vel_variance = rng.nextFloat(0.8f, 1.0f);
             final float y_vel_variance = rng.nextFloat(0.8f, 1.0f);
 
-            final Sprite new_fog = new Sprite(panel, fogPrefab, x, y, scale, 0, speed);
+            final Sprite new_fog = new Fog(panel, fogPrefab, x, y, scale, 0, speed);
             new_fog.xVelocity = speed * x_vel_variance;
             new_fog.yVelocity = speed * y_vel_variance;
 
-            fogs.add(new_fog);
+            panel.addObject(new_fog);
         }
     }
 
     public void reuseOutOfBounds() {
         final ThreadLocalRandom rng = ThreadLocalRandom.current();
 
-        for (final Sprite fog : fogs) {
-            if (!fog.isOutOfBounds()) {
-                continue;
+        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
+            if (objects_it.next() instanceof Fog fog) {
+                if (!fog.isOutOfBounds()) {
+                    continue;
+                }
+
+                final boolean top_or_left = rng.nextInt(0, 2) == 1;
+
+                if (top_or_left) {
+                    fog.x = rng.nextFloat(spawnLeft, spawnRight - fog.widthScaled);
+                    fog.y = spawnTop + 1.0f;
+                } else {
+                    fog.x = spawnLeft + 1.0f;
+                    fog.y = rng.nextFloat(spawnTop, spawnBottom - fog.heightScaled);
+                }
+
+                // TODO bug clouds getting slower
+                final float x_vel_variance = rng.nextFloat(0.8f, 1.0f);
+                final float y_vel_variance = rng.nextFloat(0.8f, 1.0f);
+
+                fog.xVelocity = fog.speed * x_vel_variance;
+                fog.yVelocity = fog.speed * y_vel_variance;
             }
-
-            final boolean top_or_left = rng.nextInt(0, 2) == 1;
-
-            if (top_or_left) {
-                fog.x = rng.nextFloat(spawnLeft, spawnRight - fog.widthScaled);
-                fog.y = spawnTop + 1.0f;
-            } else {
-                fog.x = spawnLeft + 1.0f;
-                fog.y = rng.nextFloat(spawnTop, spawnBottom - fog.heightScaled);
-            }
-
-            // TODO bug clouds getting slower
-            final float x_vel_variance = rng.nextFloat(0.8f, 1.0f);
-            final float y_vel_variance = rng.nextFloat(0.8f, 1.0f);
-
-            fog.xVelocity = fog.speed * x_vel_variance;
-            fog.yVelocity = fog.speed * y_vel_variance;
         }
     }
 }

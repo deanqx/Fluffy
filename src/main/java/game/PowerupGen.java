@@ -1,13 +1,11 @@
 package game;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PowerupGen {
     private final GamePanel panel;
     private final Sprite cloud;
-    private final ArrayList<Sprite> pickups;
-    private final ArrayList<Sprite> powerups;
     private final Prefab pickupPrefab;
     private final Prefab powerupPrefab;
     private final float fallingSpeed;
@@ -21,14 +19,11 @@ public class PowerupGen {
 
     private final float spawnRotations[] = { 0.0f, 0.5f, 0.75f, 0.25f, 0.125f, 0.375f, 0.625f, 0.875f };
 
-    public PowerupGen(final GamePanel panel, final Sprite cloud, final ArrayList<Sprite> pickups,
-            final ArrayList<Sprite> powerups,
+    public PowerupGen(final GamePanel panel, final Sprite cloud,
             final Prefab pickup_prefab, final Prefab powerup_prefab, final float scale, final float falling_speed,
             final float rotation_speed, final float rotation_radius) {
         this.panel = panel;
         this.cloud = cloud;
-        this.pickups = pickups;
-        this.powerups = powerups;
         this.pickupPrefab = pickup_prefab;
         this.powerupPrefab = powerup_prefab;
         this.fallingSpeed = falling_speed;
@@ -47,57 +42,70 @@ public class PowerupGen {
             final float x = t.nextFloat(1.0f, panel.getGameWidth() - pickupWidthScaled - 1.0f);
             final float y = pickupHeightScaled * -scale;
 
-            final Sprite new_pickup = new Sprite(panel, pickupPrefab, x, y, scale, 0, fallingSpeed);
+            final Sprite new_pickup = new Pickup(panel, pickupPrefab, x, y, scale, 0, fallingSpeed);
             new_pickup.yVelocity = fallingSpeed;
 
-            pickups.add(new_pickup);
+            panel.addObject(new_pickup);
         }
     }
 
     public void pickup() {
-        for (final Sprite powerup : powerups) {
-            if (!powerup.visible) {
-                powerup.visible = true;
-                return;
+        int powerup_index = 0;
+
+        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
+            if (objects_it.next() instanceof Powerup powerup) {
+                // reuse old powerup
+                if (!powerup.visible) {
+                    powerup.visible = true;
+                    return;
+                }
+
+                powerup_index += 1;
             }
         }
 
-        if (powerups.size() == 8) {
+        if (powerup_index == 8) {
             panel.addScore(200.0f);
             return;
         }
 
-        if (powerups.size() == 0) {
+        if (powerup_index == 0) {
             rotation = 0.0f;
         }
 
-        final Sprite powerup = new Sprite(panel, powerupPrefab, 0.0f, 0.0f, scale, 200f, rotationSpeed);
+        final var powerup = new Powerup(panel, powerupPrefab, 0.0f, 0.0f, scale, 200f, rotationSpeed);
 
-        powerup.x = rotationRadius * (float) Math.cos(2.0f * (float) Math.PI * spawnRotations[powerups.size()]);
-        powerup.y = rotationRadius * (float) Math.sin(2.0f * (float) Math.PI * spawnRotations[powerups.size()]);
+        powerup.x = rotationRadius * (float) Math.cos(2.0f * (float) Math.PI * spawnRotations[powerup_index]);
+        powerup.y = rotationRadius * (float) Math.sin(2.0f * (float) Math.PI * spawnRotations[powerup_index]);
 
         cloud.addChild(powerup);
-        powerups.add(powerup);
+        panel.addObject(powerup);
     }
 
     public void moveAll() {
-        for (int i = 0; i < powerups.size(); i++) {
-            final float rot = 2.0f * (float) Math.PI * (rotation + spawnRotations[i]);
+        int powerup_index = 0;
 
-            final float rotation_cos = (float) Math.cos(rot);
-            final float rotation_sin = (float) Math.sin(rot);
+        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
+            if (objects_it.next() instanceof Powerup powerup) {
+                final float rot = 2.0f * (float) Math.PI * (rotation + spawnRotations[powerup_index]);
 
-            powerups.get(i).x = cloud.x + cloud.xMidOffset - powerups.get(i).xMidOffset
-                    + rotationRadius * rotation_cos;
-            powerups.get(i).y = cloud.y + cloud.yMidOffset - powerups.get(i).yMidOffset
-                    + rotationRadius * rotation_sin;
+                final float rotation_cos = (float) Math.cos(rot);
+                final float rotation_sin = (float) Math.sin(rot);
 
-            if (rotation_cos < 0.6f && rotation_sin < 0.8f) {
-                if (powerups.get(i).widthScaled >= 0.0f)
-                    powerups.get(i).widthScaled *= -1.0f;
-            } else {
-                if (powerups.get(i).widthScaled < 0.0f)
-                    powerups.get(i).widthScaled *= -1.0f;
+                powerup.x = cloud.x + cloud.xMidOffset - powerup.xMidOffset + rotationRadius * rotation_cos;
+                powerup.y = cloud.y + cloud.yMidOffset - powerup.yMidOffset + rotationRadius * rotation_sin;
+
+                if (rotation_cos < 0.6f && rotation_sin < 0.8f) {
+                    if (powerup.widthScaled >= 0.0f) {
+                        powerup.widthScaled *= -1.0f;
+                    }
+                } else {
+                    if (powerup.widthScaled < 0.0f) {
+                        powerup.widthScaled *= -1.0f;
+                    }
+                }
+
+                powerup_index += 1;
             }
         }
 
@@ -109,9 +117,11 @@ public class PowerupGen {
     }
 
     public void clean() {
-        for (final Sprite pickup : pickups) {
-            if (pickup.isOutOfBounds()) {
-                pickup.toRemove = true;
+        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
+            if (objects_it.next() instanceof Pickup pickup) {
+                if (pickup.isOutOfBounds()) {
+                    pickup.toRemove = true;
+                }
             }
         }
     }
