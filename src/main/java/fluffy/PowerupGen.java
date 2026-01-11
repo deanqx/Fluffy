@@ -4,30 +4,25 @@ import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PowerupGen {
+    private final float spawnRotations[] = { 0.0f, 0.5f, 0.75f, 0.25f, 0.125f, 0.375f, 0.625f, 0.875f };
+
     private final GamePanel panel;
-    private final Sprite cloud;
     private final Prefab pickupPrefab;
     private final Prefab powerupPrefab;
-    private final float fallingSpeed;
-    private final float rotationSpeed;
     private final float rotationRadius;
-    private float rotation = 0.0f;
-
     private final float pickupWidthScaled;
     private final float pickupHeightScaled;
     private final float scale;
 
-    private final float spawnRotations[] = { 0.0f, 0.5f, 0.75f, 0.25f, 0.125f, 0.375f, 0.625f, 0.875f };
+    private float fallingSpeed = 0.0f;
+    private float rotationSpeed = 0.0f;
+    private float rotation = 0.0f;
 
-    public PowerupGen(final GamePanel panel, final Sprite cloud,
-            final Prefab pickup_prefab, final Prefab powerup_prefab, final float scale, final float falling_speed,
-            final float rotation_speed, final float rotation_radius) {
+    public PowerupGen(final GamePanel panel, final Prefab pickup_prefab, final Prefab powerup_prefab, final float scale,
+            final float rotation_radius) {
         this.panel = panel;
-        this.cloud = cloud;
         this.pickupPrefab = pickup_prefab;
         this.powerupPrefab = powerup_prefab;
-        this.fallingSpeed = falling_speed;
-        this.rotationSpeed = rotation_speed;
         this.rotationRadius = rotation_radius;
         this.scale = scale;
 
@@ -42,7 +37,11 @@ public class PowerupGen {
             final float x = t.nextFloat(1.0f, panel.getGameWidth() - pickupWidthScaled - 1.0f);
             final float y = pickupHeightScaled * -scale;
 
-            final Sprite new_pickup = new Pickup(panel, pickupPrefab, x, y, scale, 0, fallingSpeed);
+            final Sprite new_pickup = new Pickup(panel, pickupPrefab);
+            new_pickup.setX(x);
+            new_pickup.setY(y);
+            new_pickup.setSpriteScale(scale);
+            new_pickup.setSpeed(fallingSpeed);
             new_pickup.yVelocity = fallingSpeed;
 
             panel.addObject(new_pickup);
@@ -53,7 +52,7 @@ public class PowerupGen {
         int powerup_index = 0;
 
         for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof Powerup powerup) {
+            if (objects_it.next() instanceof final Powerup powerup) {
                 // reuse old powerup
                 if (!powerup.visible) {
                     powerup.visible = true;
@@ -73,12 +72,15 @@ public class PowerupGen {
             rotation = 0.0f;
         }
 
-        final var powerup = new Powerup(panel, powerupPrefab, 0.0f, 0.0f, scale, 200f, rotationSpeed);
+        final var powerup = new Powerup(panel, powerupPrefab);
+        powerup.setSpriteScale(scale);
+        powerup.setAnimationImageTime(200f);
+        powerup.setSpeed(rotationSpeed);
 
-        powerup.x = rotationRadius * (float) Math.cos(2.0f * (float) Math.PI * spawnRotations[powerup_index]);
-        powerup.y = rotationRadius * (float) Math.sin(2.0f * (float) Math.PI * spawnRotations[powerup_index]);
+        powerup.setX(rotationRadius * (float) Math.cos(2.0f * (float) Math.PI * spawnRotations[powerup_index]));
+        powerup.setY(rotationRadius * (float) Math.sin(2.0f * (float) Math.PI * spawnRotations[powerup_index]));
 
-        cloud.addChild(powerup);
+        panel.getCharacter().addChild(powerup);
         panel.addObject(powerup);
     }
 
@@ -86,14 +88,16 @@ public class PowerupGen {
         int powerup_index = 0;
 
         for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof Powerup powerup) {
+            if (objects_it.next() instanceof final Powerup powerup) {
                 final float rot = 2.0f * (float) Math.PI * (rotation + spawnRotations[powerup_index]);
 
                 final float rotation_cos = (float) Math.cos(rot);
                 final float rotation_sin = (float) Math.sin(rot);
 
-                powerup.x = cloud.x + cloud.xMidOffset - powerup.xMidOffset + rotationRadius * rotation_cos;
-                powerup.y = cloud.y + cloud.yMidOffset - powerup.yMidOffset + rotationRadius * rotation_sin;
+                powerup.x = panel.getCharacter().x + panel.getCharacter().xMidOffset - powerup.xMidOffset
+                        + rotationRadius * rotation_cos;
+                powerup.y = panel.getCharacter().y + panel.getCharacter().yMidOffset - powerup.yMidOffset
+                        + rotationRadius * rotation_sin;
 
                 if (rotation_cos < 0.6f && rotation_sin < 0.8f) {
                     if (powerup.widthScaled >= 0.0f) {
@@ -118,11 +122,19 @@ public class PowerupGen {
 
     public void clean() {
         for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof Pickup pickup) {
+            if (objects_it.next() instanceof final Pickup pickup) {
                 if (pickup.isOutOfBounds()) {
                     pickup.toRemove = true;
                 }
             }
         }
+    }
+
+    public void setFallingSpeed(final float fallingSpeed) {
+        this.fallingSpeed = fallingSpeed;
+    }
+
+    public void setRotationSpeed(final float rotationSpeed) {
+        this.rotationSpeed = rotationSpeed;
     }
 }

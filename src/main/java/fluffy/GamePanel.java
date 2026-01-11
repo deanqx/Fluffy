@@ -38,7 +38,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private final Prefab prefabPowerup;
     private final Prefab prefabPickup;
 
-    private Sprite cloud = null;
+    private Sprite character = null;
+
     private PowerupGen powerupGen;
     private EnemyGen enemyGen;
     private FogGen fogGen;
@@ -105,24 +106,38 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void init() {
         score = 0;
 
-        cloud = new Character(this, prefabCharacter, 375f, 400f, 2.0f, 500f, 0.3f, 0.625f, 0.92f, 1.1875f);
-        objects.add(cloud);
+        // TODO replace factor with offset
+        final float customRadiusFactor = 0.625f;
+        final float customXMidFactor = 0.92f;
+        final float customYMidFactor = 1.1875f;
+        character = new Character(this, prefabCharacter, customRadiusFactor, customXMidFactor, customYMidFactor);
+        character.setX(375f);
+        character.setY(400f);
+        character.setSpriteScale(2.0f);
+        character.setAnimationImageTime(500f);
+        character.setSpeed(0.3f);
+        objects.add(character);
 
         final float flight_path_radius = 64.0f;
-
-        // TODO remove magic numbers
-        powerupGen = new PowerupGen(this, cloud, prefabPickup, prefabPowerup, 2.0f, 0.03f,
-                0.3f, flight_path_radius);
+        final float powerup_pickup_scale = 2.0f;
+        powerupGen = new PowerupGen(this, prefabPickup, prefabPowerup, powerup_pickup_scale, flight_path_radius);
+        powerupGen.setFallingSpeed(0.03f);
+        powerupGen.setRotationSpeed(0.3f);
 
         final var flight_path = new Gizmo(
-                new Rectangle2D.Float(cloud.xMidOffset - flight_path_radius, cloud.yMidOffset - flight_path_radius,
+                new Rectangle2D.Float(character.xMidOffset - flight_path_radius,
+                        character.yMidOffset - flight_path_radius,
                         2.0f * flight_path_radius, 2.0f * flight_path_radius),
                 Color.GREEN, Gizmo.Shape.OVAL);
-        cloud.addGizmo(flight_path);
+        character.addGizmo(flight_path);
 
-        enemyGen = new EnemyGen(this, prefabEnemy, 2.0f, 0.05f);
+        final float enemy_scale = 2.0f;
+        enemyGen = new EnemyGen(this, prefabEnemy, enemy_scale);
+        enemyGen.setSpeed(0.05f);
 
-        fogGen = new FogGen(this, prefabFog, 0.5f, 1.2f);
+        final float fog_min_scale = 0.5f;
+        final float fog_max_scale = 1.2f;
+        fogGen = new FogGen(this, prefabFog, fog_min_scale, fog_max_scale);
         fogGen.spawn(10, 0.03f);
     }
 
@@ -138,36 +153,36 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void updateVelocity() {
         // TODO
         if (keyUp)
-            cloud.yVelocity = -cloud.speed;
+            character.yVelocity = -character.speed;
         else if (keyDown)
-            cloud.yVelocity = cloud.speed;
+            character.yVelocity = character.speed;
 
         if (keyLeft)
-            cloud.xVelocity = -cloud.speed;
+            character.xVelocity = -character.speed;
         else if (keyRight)
-            cloud.xVelocity = cloud.speed;
+            character.xVelocity = character.speed;
 
         if (keyUp == keyDown)
-            cloud.yVelocity = 0.0f;
+            character.yVelocity = 0.0f;
         if (keyLeft == keyRight)
-            cloud.xVelocity = 0.0f;
+            character.xVelocity = 0.0f;
     }
 
     public void collisionBounds() {
-        if (cloud.x < 0.0f) {
-            cloud.x = 0.0f;
+        if (character.x < 0.0f) {
+            character.x = 0.0f;
         }
 
-        if (cloud.y < 0.0f) {
-            cloud.y = 0.0f;
+        if (character.y < 0.0f) {
+            character.y = 0.0f;
         }
 
-        if (cloud.x + cloud.widthScaled > gameWidth) {
-            cloud.x = gameWidth - cloud.widthScaled;
+        if (character.x + character.widthScaled > gameWidth) {
+            character.x = gameWidth - character.widthScaled;
         }
 
-        if (cloud.y + cloud.heightScaled > gameHeight) {
-            cloud.y = gameHeight - cloud.heightScaled;
+        if (character.y + character.heightScaled > gameHeight) {
+            character.y = gameHeight - character.heightScaled;
         }
     }
 
@@ -177,13 +192,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         for (final GameObject object : objects) {
             switch (object) {
                 case Pickup pickup -> {
-                    if (pickup.hasCollided(cloud)) {
+                    if (pickup.hasCollided(character)) {
                         pickup.toRemove = true;
                         powerupGen.pickup();
                     }
                 }
                 case Enemy enemy -> {
-                    if (enemy.hasCollided(cloud)) {
+                    if (enemy.hasCollided(character)) {
                         reset();
                         return;
                     }
@@ -207,8 +222,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     private void drawGizmos(final Graphics g) {
-        if (cloud != null) {
-            cloud.drawGizmos(g);
+        if (character != null) {
+            character.drawGizmos(g);
         }
 
         for (final GameObject object : objects) {
@@ -220,8 +235,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
-        if (cloud != null) {
-            cloud.draw(g);
+        if (character != null) {
+            character.draw(g);
         }
 
         for (final GameObject object : objects) {
@@ -279,6 +294,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     private void moveAll() {
+        // TODO overwrite pickup and powerup move function
         powerupGen.moveAll();
 
         for (final GameObject object : objects) {
@@ -294,7 +310,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             deltaTimeMs = (float) (System.nanoTime() - last) * 1e-6f;
             last = System.nanoTime();
             fixedUpdateCounter += deltaTimeMs;
-            fps = 1e6f / deltaTimeMs;
+            fps = 1e3f / deltaTimeMs;
 
             // Add 25 per second
             score += deltaTimeMs * 0.025f;
@@ -386,5 +402,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
     public void addObject(GameObject object) {
         objectsAddQueue.add(object);
+    }
+
+    public Sprite getCharacter() {
+        return character;
     }
 }

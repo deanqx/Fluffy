@@ -6,68 +6,44 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class Sprite extends GameObject {
-    /// x middle offset
-    float xMidOffset;
-    /// y middle offset
-    float yMidOffset;
-    float xVelocity;
-    float yVelocity;
-    float widthScaled;
-    float heightScaled;
-    float speed;
-    private final float local_scale;
-    private float hitboxRadius;
-
-    private final float customRadiusFactor;
-    private final float customXMidFactor;
-    private final float customYNidFactor;
-
     private final GamePanel panel;
     private final Prefab prefab;
-    private final float each_image_duration;
-    private float current_image_time = 0.0f;
-    private int currentImageIndex = 0;
+    private final float customRadiusFactor;
+    private final float customXMidFactor;
+    private final float customYMidFactor;
     private final ArrayList<Sprite> childs = new ArrayList<>();
     private final ArrayList<Gizmo> gizmos = new ArrayList<>();
 
-    public void rescale() {
-        widthScaled = width * local_scale;
-        heightScaled = height * local_scale;
-        xMidOffset = widthScaled / 2.0f * customXMidFactor;
-        yMidOffset = heightScaled / 2.0f * customYNidFactor;
-        hitboxRadius = Math.max(widthScaled, heightScaled) / 2.0f * customRadiusFactor;
+    private float local_scale = 1.0f;
+    private float hitboxRadius = 0.0f;
+    private float timePerImageMs = 500.0f;
+    private float currentImageTimeMs = 0.0f;
+    private int currentImageIndex = 0;
+
+    // TODO make private
+    /// x middle offset
+    float xMidOffset = 0.0f;
+    /// y middle offset
+    float yMidOffset = 0.0f;
+    float xVelocity = 0.0f;
+    float yVelocity = 0.0f;
+    float widthScaled = 0.0f;
+    float heightScaled = 0.0f;
+    float speed = 0.0f;
+
+    public Sprite(final GamePanel panel, final Prefab prefab) {
+        this(panel, prefab, 1.0f, 1.0f, 1.0f);
     }
 
-    public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
-            final float each_image_duration, final float speed) {
-        this(panel, prefab, x, y, scale, each_image_duration, speed, 1.0f, 1.0f, 1.0f);
-    }
-
-    // TODO reduce parameter count
-    public Sprite(final GamePanel panel, final Prefab prefab, final float x, final float y, final float scale,
-            final float each_image_duration, final float speed,
-            final float custom_radius_factor, final float custom_x_mid_factor, final float custom_y_mid_factor) {
-        this.x = x;
-        this.y = y;
+    public Sprite(final GamePanel panel, final Prefab prefab, float customRadiusFactor, float customXMidFactor,
+            float customYMidFactor) {
         this.width = prefab.getImage(0).getWidth();
         this.height = prefab.getImage(0).getHeight();
-
         this.panel = panel;
-        this.speed = speed;
-        this.local_scale = scale;
         this.prefab = prefab;
-        this.each_image_duration = each_image_duration;
-        this.customRadiusFactor = custom_radius_factor;
-        this.customXMidFactor = custom_x_mid_factor;
-        this.customYNidFactor = custom_y_mid_factor;
-
-        rescale();
-
-        var hitboxGizmo = new Gizmo(
-                new Rectangle2D.Float(xMidOffset - hitboxRadius, yMidOffset - hitboxRadius,
-                        2.0f * hitboxRadius, 2.0f * hitboxRadius),
-                Color.MAGENTA, Gizmo.Shape.OVAL);
-        addGizmo(hitboxGizmo);
+        this.customXMidFactor = customXMidFactor;
+        this.customYMidFactor = customYMidFactor;
+        this.customRadiusFactor = customRadiusFactor;
     }
 
     public boolean hasCollided(final Sprite to) {
@@ -116,10 +92,10 @@ public class Sprite extends GameObject {
             return;
         }
 
-        current_image_time += panel.getDeltaTimeMs();
+        currentImageTimeMs += panel.getDeltaTimeMs();
 
-        if (current_image_time > each_image_duration) {
-            current_image_time = 0.0f;
+        if (currentImageTimeMs > timePerImageMs) {
+            currentImageTimeMs = 0.0f;
             advanceAnimation();
         }
     }
@@ -146,5 +122,29 @@ public class Sprite extends GameObject {
     public void addGizmo(Gizmo gizmo) {
         gizmo.setParent(this);
         gizmos.add(gizmo);
+    }
+
+    public void setSpriteScale(float scale) {
+        this.local_scale = scale;
+
+        widthScaled = width * local_scale;
+        heightScaled = height * local_scale;
+        xMidOffset = widthScaled / 2.0f * customXMidFactor;
+        yMidOffset = heightScaled / 2.0f * customYMidFactor;
+        hitboxRadius = Math.max(widthScaled, heightScaled) / 2.0f * customRadiusFactor;
+
+        var hitboxGizmo = new Gizmo(
+                new Rectangle2D.Float(xMidOffset - hitboxRadius, yMidOffset - hitboxRadius,
+                        2.0f * hitboxRadius, 2.0f * hitboxRadius),
+                Color.MAGENTA, Gizmo.Shape.OVAL);
+        addGizmo(hitboxGizmo);
+    }
+
+    public void setAnimationImageTime(float time_per_image) {
+        this.timePerImageMs = time_per_image;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 }

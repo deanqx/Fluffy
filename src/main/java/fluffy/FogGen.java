@@ -14,8 +14,7 @@ public class FogGen {
     private final float spawnBottom;
     private final float spawnRight;
 
-    public FogGen(final GamePanel panel, final Prefab fog_prefab, final float min_scale,
-            final float max_scale) {
+    public FogGen(final GamePanel panel, final Prefab fog_prefab, final float min_scale, final float max_scale) {
         this.panel = panel;
         this.fogPrefab = fog_prefab;
         this.minScale = min_scale;
@@ -37,7 +36,11 @@ public class FogGen {
             final float x_vel_variance = rng.nextFloat(0.8f, 1.0f);
             final float y_vel_variance = rng.nextFloat(0.8f, 1.0f);
 
-            final Sprite new_fog = new Fog(panel, fogPrefab, x, y, scale, 0, speed);
+            final Sprite new_fog = new Fog(panel, fogPrefab);
+            new_fog.setX(x);
+            new_fog.setY(y);
+            new_fog.setSpriteScale(scale);
+            new_fog.setSpeed(speed);
             new_fog.xVelocity = speed * x_vel_variance;
             new_fog.yVelocity = speed * y_vel_variance;
 
