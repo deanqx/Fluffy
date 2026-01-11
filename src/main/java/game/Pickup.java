@@ -1,4 +1,4 @@
-package fluffy;
+package game;
 
 public class Pickup extends Sprite {
     public Pickup(GamePanel panel, Prefab prefab) {

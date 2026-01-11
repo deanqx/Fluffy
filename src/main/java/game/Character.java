@@ -1,4 +1,4 @@
-package fluffy;
+package game;
 
 public class Character extends Sprite {
         public Character(final GamePanel panel, final Prefab prefab, float customRadiusFactor, float customXMidFactor,

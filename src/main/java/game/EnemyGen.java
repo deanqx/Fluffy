@@ -1,4 +1,4 @@
-package fluffy;
+package game;
 
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;

@@ -11,5 +11,5 @@ java {
 }
 
 application {   
-    mainClass = "fluffy.Main"
+    mainClass = "game.Main"
 }

@@ -1,4 +1,4 @@
-package fluffy;
+package game;
 
 public class Fog extends Sprite {
     public Fog(GamePanel panel, Prefab prefab) {
