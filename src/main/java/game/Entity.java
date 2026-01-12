@@ -2,7 +2,7 @@ package game;
 
 import java.awt.Graphics;
 
-public abstract class GameObject {
+public abstract class Entity {
     public float x = 0.0f;
     public float y = 0.0f;
     public float width = 0.0f;

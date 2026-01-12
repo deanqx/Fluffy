@@ -51,8 +51,8 @@ public class PowerupGen {
     public void pickup() {
         int powerup_index = 0;
 
-        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof final Powerup powerup) {
+        for (final Iterator<Entity> entities_it = panel.iterateObjects(); entities_it.hasNext();) {
+            if (entities_it.next() instanceof final Powerup powerup) {
                 // reuse old powerup
                 if (!powerup.visible) {
                     powerup.visible = true;
@@ -87,8 +87,8 @@ public class PowerupGen {
     public void moveAll() {
         int powerup_index = 0;
 
-        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof final Powerup powerup) {
+        for (final Iterator<Entity> entities_it = panel.iterateObjects(); entities_it.hasNext();) {
+            if (entities_it.next() instanceof final Powerup powerup) {
                 final float rot = 2.0f * (float) Math.PI * (rotation + spawnRotations[powerup_index]);
 
                 final float rotation_cos = (float) Math.cos(rot);
@@ -121,8 +121,8 @@ public class PowerupGen {
     }
 
     public void clean() {
-        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof final Pickup pickup) {
+        for (final Iterator<Entity> entities_it = panel.iterateObjects(); entities_it.hasNext();) {
+            if (entities_it.next() instanceof final Pickup pickup) {
                 if (pickup.isOutOfBounds()) {
                     pickup.toRemove = true;
                 }

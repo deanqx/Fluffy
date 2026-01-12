@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-public class Sprite extends GameObject {
+public class Sprite extends Entity {
     private final GamePanel panel;
     private final Prefab prefab;
     private final float customRadiusFactor;

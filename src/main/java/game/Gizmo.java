@@ -15,7 +15,7 @@ public class Gizmo extends Rectangle2D.Float {
     private final Color color;
     private final Shape shape;
     /// can be null
-    private GameObject parent = null;
+    private Entity parent = null;
 
     public Gizmo(final Rectangle2D.Float position_dimension, final Color color, final Shape shape) {
         this.color = color;
@@ -43,7 +43,7 @@ public class Gizmo extends Rectangle2D.Float {
         }
     }
 
-    public void setParent(GameObject parent) {
+    public void setParent(Entity parent) {
         this.parent = parent;
     }
 }

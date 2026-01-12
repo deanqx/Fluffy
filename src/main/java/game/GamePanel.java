@@ -44,9 +44,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private EnemyGen enemyGen;
     private FogGen fogGen;
 
-    private ArrayList<GameObject> objects = new ArrayList<>();
-    /// these GameObjects are added in the next frame
-    private ArrayList<GameObject> objectsAddQueue = new ArrayList<>();
+    private ArrayList<Entity> entities = new ArrayList<>();
+    /// these Entities are added in the next frame
+    private ArrayList<Entity> entitiesAddQueue = new ArrayList<>();
 
     private boolean debugMode = false;
     private boolean keyUp;
@@ -116,7 +116,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         character.setSpriteScale(2.0f);
         character.setAnimationImageTime(500f);
         character.setSpeed(0.3f);
-        objects.add(character);
+        entities.add(character);
 
         final float flight_path_radius = 64.0f;
         final float powerup_pickup_scale = 2.0f;
@@ -146,7 +146,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             scoreBest = score;
         }
 
-        objects.clear();
+        entities.clear();
         init();
     }
 
@@ -185,8 +185,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void collisionObjects() {
         collisionBounds();
 
-        for (final GameObject object : objects) {
-            switch (object) {
+        for (final Entity entity : entities) {
+            switch (entity) {
                 case Pickup pickup -> {
                     if (pickup.hasCollided(character)) {
                         pickup.toRemove = true;
@@ -199,8 +199,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                         return;
                     }
 
-                    for (final GameObject object2 : objects) {
-                        if (object2 instanceof final Powerup powerup) {
+                    for (final Entity entity2 : entities) {
+                        if (entity2 instanceof final Powerup powerup) {
                             if (powerup.visible && powerup.hasCollided(enemy)) {
                                 powerup.visible = false;
                                 enemy.visible = false;
@@ -222,8 +222,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             character.drawGizmos(g);
         }
 
-        for (final GameObject object : objects) {
-            object.drawGizmos(g);
+        for (final Entity entity : entities) {
+            entity.drawGizmos(g);
         }
     }
 
@@ -235,8 +235,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             character.draw(g);
         }
 
-        for (final GameObject object : objects) {
-            object.draw(g);
+        for (final Entity entity : entities) {
+            entity.draw(g);
         }
 
         if (debugMode) {
@@ -293,8 +293,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         // TODO overwrite pickup and powerup move function
         powerupGen.moveAll();
 
-        for (final GameObject object : objects) {
-            object.move();
+        for (final Entity entity : entities) {
+            entity.move();
         }
     }
 
@@ -311,9 +311,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             // Add 25 per second
             score += deltaTimeMs * 0.025f;
 
-            if (objectsAddQueue.size() > 0) {
-                objects.addAll(objectsAddQueue);
-                objectsAddQueue.clear();
+            if (entitiesAddQueue.size() > 0) {
+                entities.addAll(entitiesAddQueue);
+                entitiesAddQueue.clear();
             }
 
             updateVelocity();
@@ -322,8 +322,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
             collisionObjects();
 
-            for (final GameObject object : objects) {
-                object.update();
+            for (final Entity entity : entities) {
+                entity.update();
             }
 
             if (fixedUpdateCounter >= fixedUpdateInterval) {
@@ -333,7 +333,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
             enemyGen.reuseOutOfBounds();
 
-            objects.removeIf(object -> object.toRemove);
+            entities.removeIf(entity -> entity.toRemove);
 
             repaint();
 
@@ -392,12 +392,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         return gameWidth;
     }
 
-    public Iterator<GameObject> iterateObjects() {
-        return objects.iterator();
+    public Iterator<Entity> iterateObjects() {
+        return entities.iterator();
     }
 
-    public void addObject(GameObject object) {
-        objectsAddQueue.add(object);
+    public void addObject(Entity entity) {
+        entitiesAddQueue.add(entity);
     }
 
     public Sprite getCharacter() {

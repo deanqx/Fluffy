@@ -43,8 +43,8 @@ public class EnemyGen {
     public void reuseOutOfBounds() {
         final ThreadLocalRandom rng = ThreadLocalRandom.current();
 
-        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof final Enemy enemy) {
+        for (final Iterator<Entity> entities_it = panel.iterateObjects(); entities_it.hasNext();) {
+            if (entities_it.next() instanceof final Enemy enemy) {
                 if (enemy.isOutOfBounds()) {
                     enemy.x = rng.nextFloat(1.0f, panel.getGameWidth() - enemyWidthScaled - 1.0f);
                     enemy.y = enemyHeightScaled * -scale;

@@ -51,8 +51,8 @@ public class FogGen {
     public void reuseOutOfBounds() {
         final ThreadLocalRandom rng = ThreadLocalRandom.current();
 
-        for (final Iterator<GameObject> objects_it = panel.iterateObjects(); objects_it.hasNext();) {
-            if (objects_it.next() instanceof Fog fog) {
+        for (final Iterator<Entity> entities_it = panel.iterateObjects(); entities_it.hasNext();) {
+            if (entities_it.next() instanceof Fog fog) {
                 if (!fog.isOutOfBounds()) {
                     continue;
                 }
