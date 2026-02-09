@@ -1,3 +1,4 @@
+// TODO move into own package
 package game;
 
 public class Character extends Sprite {

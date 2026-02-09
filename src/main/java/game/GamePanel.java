@@ -48,6 +48,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     /// these Entities are added in the next frame
     private ArrayList<Entity> entitiesAddQueue = new ArrayList<>();
 
+    // TODO use joystick
     private boolean debugMode = false;
     private boolean keyUp;
     private boolean keyLeft;
