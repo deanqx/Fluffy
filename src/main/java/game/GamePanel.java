@@ -156,12 +156,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             character.yVelocity = -character.speed;
         } else if (keyDown) {
             character.yVelocity = character.speed;
+        } else {
+            character.yVelocity = 0;
         }
 
         if (keyLeft) {
             character.xVelocity = -character.speed;
         } else if (keyRight) {
             character.xVelocity = character.speed;
+        } else {
+            character.xVelocity = 0;
         }
     }
 
